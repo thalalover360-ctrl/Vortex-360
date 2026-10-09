@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vortex-360</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <div id="hud">
+      <span id="level-title">Level 1</span>
+      <span id="death-counter">Deaths: 0</span>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- On-screen mobile touch controls -->
+    <div id="controls">
+      <div class="dpad">
+        <button id="btn-left" class="ctrl-btn">◀</button>
+        <button id="btn-right" class="ctrl-btn">▶</button>
+      </div>
+      <div class="actions">
+        <button id="btn-jump" class="ctrl-btn jump-btn">▲</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="player.js"></script>
+  <script src="levels.js"></script>
+  <script src="engine.js"></script>
+</body>
+</html>
