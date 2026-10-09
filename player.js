@@ -1,23 +1,24 @@
 class Player {
   constructor() {
-    this.width = 20;
-    this.height = 36;
+    this.width = 22;
+    this.height = 38;
     this.x = 0;
     this.y = 0;
     this.vx = 0;
     this.vy = 0;
 
-    // Movement
-    this.speed = 4.8;
-    this.jumpForce = -12;
-    this.gravity = 0.58;
+    // Movement Physics
+    this.speed = 5.0;
+    this.jumpForce = -12.5;
+    this.gravity = 0.62;
     this.maxFallSpeed = 13;
 
-    // Animation frames
+    // States & Visual FX
     this.isGrounded = false;
     this.facing = 1;
     this.alive = true;
-    this.runCycle = 0;
+    this.animTime = 0;
+    this.trail = [];
   }
 
   reset(spawnX, spawnY) {
@@ -27,7 +28,8 @@ class Player {
     this.vy = 0;
     this.isGrounded = false;
     this.alive = true;
-    this.runCycle = 0;
+    this.animTime = 0;
+    this.trail = [];
   }
 
   update(input, platforms) {
@@ -36,14 +38,14 @@ class Player {
     if (input.left) {
       this.vx = -this.speed;
       this.facing = -1;
-      this.runCycle += 0.25;
+      this.animTime += 0.22;
     } else if (input.right) {
       this.vx = this.speed;
       this.facing = 1;
-      this.runCycle += 0.25;
+      this.animTime += 0.22;
     } else {
       this.vx = 0;
-      this.runCycle = 0;
+      this.animTime = 0;
     }
 
     if (input.jump && this.isGrounded) {
@@ -54,7 +56,15 @@ class Player {
     this.vy += this.gravity;
     if (this.vy > this.maxFallSpeed) this.vy = this.maxFallSpeed;
 
-    // X collision
+    // Store trail for motion glow effect
+    if (Math.abs(this.vx) > 0.5 || !this.isGrounded) {
+      this.trail.push({ x: this.x, y: this.y, alpha: 0.4 });
+      if (this.trail.length > 5) this.trail.shift();
+    } else {
+      if (this.trail.length > 0) this.trail.shift();
+    }
+
+    // X Collision
     this.x += this.vx;
     for (const p of platforms) {
       if (this.checkCollision(this, p)) {
@@ -64,7 +74,7 @@ class Player {
       }
     }
 
-    // Y collision
+    // Y Collision
     this.y += this.vy;
     this.isGrounded = false;
     for (const p of platforms) {
@@ -93,66 +103,80 @@ class Player {
   draw(ctx) {
     if (!this.alive) return;
 
+    // 1. Motion Trail (Ghost Shadows)
+    for (const t of this.trail) {
+      ctx.fillStyle = `rgba(0, 240, 255, ${t.alpha})`;
+      ctx.fillRect(t.x + 2, t.y + 4, this.width - 4, this.height - 8);
+      t.alpha *= 0.6;
+    }
+
     ctx.save();
     ctx.translate(this.x + this.width / 2, this.y);
     ctx.scale(this.facing, 1);
 
-    const legSwing = Math.sin(this.runCycle) * 8;
-    const armSwing = Math.cos(this.runCycle) * 7;
+    const legMove = Math.sin(this.animTime) * 7;
+    const bodyBob = Math.abs(Math.cos(this.animTime)) * 2;
 
-    // 1. Head (Human face with headband/eyes)
-    ctx.fillStyle = '#ffe0bd'; // Skin tone
+    // 2. Flowing Neon Scarf / Cape (Physics-based flap)
+    ctx.fillStyle = '#ff0055';
     ctx.beginPath();
-    ctx.arc(0, 7, 6, 0, Math.PI * 2);
+    ctx.moveTo(-4, 12 + bodyBob);
+    ctx.quadraticCurveTo(
+      -14 - Math.abs(this.vx) * 2, 
+      16 + Math.sin(this.animTime * 1.5) * 6, 
+      -20 - Math.abs(this.vx) * 3, 
+      22 + Math.cos(this.animTime * 1.5) * 4
+    );
+    ctx.lineTo(-4, 18 + bodyBob);
+    ctx.closePath();
     ctx.fill();
 
-    // Eye
-    ctx.fillStyle = '#111';
-    ctx.fillRect(2, 5, 2, 3);
-
-    // Hair / Cap
-    ctx.fillStyle = '#222';
-    ctx.beginPath();
-    ctx.arc(0, 5, 6.2, Math.PI, 0, false);
-    ctx.fill();
-
-    // 2. Torso (Cool Hoodie/Shirt)
-    ctx.fillStyle = '#ff0055'; // Neon red/pink hoodie
-    ctx.fillRect(-5, 13, 10, 12);
-
-    // 3. Arms
-    ctx.strokeStyle = '#ffe0bd';
-    ctx.lineWidth = 3;
+    // 3. Legs & Hi-Tech Boots
+    ctx.strokeStyle = '#1a1829';
+    ctx.lineWidth = 4;
     ctx.lineCap = 'round';
 
-    // Left arm
+    // Back Leg
     ctx.beginPath();
-    ctx.moveTo(-2, 15);
-    ctx.lineTo(-armSwing, 24);
+    ctx.moveTo(-2, 24 + bodyBob);
+    ctx.lineTo(-legMove - 2, 34);
     ctx.stroke();
 
-    // Right arm
+    // Front Leg
     ctx.beginPath();
-    ctx.moveTo(2, 15);
-    ctx.lineTo(armSwing, 24);
+    ctx.moveTo(3, 24 + bodyBob);
+    ctx.lineTo(legMove + 3, 34);
     ctx.stroke();
 
-    // 4. Legs & Shoes (Jeans + kicks)
-    ctx.strokeStyle = '#00f0ff'; // Cyan jeans
-    ctx.lineWidth = 3.5;
+    // Neon Boots Sole
+    ctx.fillStyle = '#00f0ff';
+    ctx.fillRect(-legMove - 5, 34, 6, 3);
+    ctx.fillRect(legMove, 34, 6, 3);
 
-    // Back leg
+    // 4. Armored Torso / Jacket
+    ctx.fillStyle = '#251e3e';
     ctx.beginPath();
-    ctx.moveTo(-2, 25);
-    ctx.lineTo(-legSwing, 35);
-    ctx.stroke();
+    ctx.roundRect(-7, 10 + bodyBob, 14, 15, 3);
+    ctx.fill();
 
-    // Front leg
+    // Jacket Neon Stripe
+    ctx.fillStyle = '#ff0055';
+    ctx.fillRect(-1, 10 + bodyBob, 2, 14);
+
+    // 5. Cyber Helmet / Head
+    ctx.fillStyle = '#0d0a1a';
     ctx.beginPath();
-    ctx.moveTo(2, 25);
-    ctx.lineTo(legSwing, 35);
-    ctx.stroke();
+    ctx.roundRect(-6, 0 + bodyBob, 12, 11, 4);
+    ctx.fill();
+
+    // Glowing Neon Visor (Eyes)
+    ctx.fillStyle = '#00f0ff';
+    ctx.shadowColor = '#00f0ff';
+    ctx.shadowBlur = 8;
+    ctx.fillRect(0, 3 + bodyBob, 6, 3);
+    ctx.shadowBlur = 0;
 
     ctx.restore();
   }
 }
+
