@@ -1,16 +1,22 @@
-// Game Engine for Vortex-360 (Edge-to-Edge Fullscreen Edition)
+// Game Engine with Level Clear Interface
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const levelTitleEl = document.getElementById('level-title');
 const deathCounterEl = document.getElementById('death-counter');
 
-// Wide screen resolution
+const modalOverlay = document.getElementById('modal-overlay');
+const modalTitle = document.getElementById('modal-title');
+const modalStats = document.getElementById('modal-stats');
+const btnNextLevel = document.getElementById('btn-next-level');
+
 canvas.width = 960;
 canvas.height = 450;
 
 let currentLevelIdx = 0;
-let deathCount = 0;
+let totalDeaths = 0;
+let levelDeaths = 0;
 let activeLevel = null;
+let isLevelPaused = false;
 
 const player = new Player();
 
@@ -50,6 +56,10 @@ window.addEventListener('keyup', (e) => {
 
 function loadLevel(idx) {
   currentLevelIdx = idx;
+  levelDeaths = 0;
+  isLevelPaused = false;
+  modalOverlay.classList.add('hidden');
+
   const template = LEVELS[currentLevelIdx];
   activeLevel = {
     ...template,
@@ -63,9 +73,30 @@ function loadLevel(idx) {
 }
 
 function handleDeath() {
-  deathCount++;
-  deathCounterEl.innerText = `Deaths: ${deathCount}`;
+  totalDeaths++;
+  levelDeaths++;
+  deathCounterEl.innerText = `Deaths: ${totalDeaths}`;
   loadLevel(currentLevelIdx);
+}
+
+function showLevelCompleteModal() {
+  isLevelPaused = true;
+  modalTitle.innerText = `${activeLevel.name} Cleared!`;
+  modalStats.innerText = `Deaths in this level: ${levelDeaths} (Total: ${totalDeaths})`;
+
+  if (currentLevelIdx + 1 < LEVELS.length) {
+    btnNextLevel.innerText = "NEXT LEVEL ▶";
+    btnNextLevel.onclick = () => loadLevel(currentLevelIdx + 1);
+  } else {
+    btnNextLevel.innerText = "PLAY AGAIN ↺";
+    btnNextLevel.onclick = () => {
+      totalDeaths = 0;
+      deathCounterEl.innerText = `Deaths: 0`;
+      loadLevel(0);
+    };
+  }
+
+  modalOverlay.classList.remove('hidden');
 }
 
 function checkOverlap(r1, r2) {
@@ -78,51 +109,53 @@ function checkOverlap(r1, r2) {
 }
 
 function gameLoop() {
-  if (activeLevel.invertActive) {
-    effectiveInput.left = rawInput.right;
-    effectiveInput.right = rawInput.left;
-  } else {
-    effectiveInput.left = rawInput.left;
-    effectiveInput.right = rawInput.right;
-  }
-  effectiveInput.jump = rawInput.jump;
+  if (!isLevelPaused) {
+    // Control Reversal Check
+    if (activeLevel.invertActive) {
+      effectiveInput.left = rawInput.right;
+      effectiveInput.right = rawInput.left;
+    } else {
+      effectiveInput.left = rawInput.left;
+      effectiveInput.right = rawInput.right;
+    }
+    effectiveInput.jump = rawInput.jump;
 
-  if (activeLevel.update) {
-    activeLevel.update(player, effectiveInput);
-  }
+    // Run Traps
+    if (activeLevel.update) {
+      activeLevel.update(player, effectiveInput);
+    }
 
-  player.update(effectiveInput, activeLevel.platforms);
+    // Physics
+    player.update(effectiveInput, activeLevel.platforms);
 
-  // Spikes Check
-  for (const h of activeLevel.hazards) {
-    if (checkOverlap(player, h)) {
+    // Hazard Hits
+    for (const h of activeLevel.hazards) {
+      if (checkOverlap(player, h)) {
+        handleDeath();
+        requestAnimationFrame(gameLoop);
+        return;
+      }
+    }
+
+    // Fall Off
+    if (player.y > canvas.height + 50) {
       handleDeath();
       requestAnimationFrame(gameLoop);
       return;
     }
-  }
 
-  // Fall Out of Screen Check
-  if (player.y > canvas.height + 50) {
-    handleDeath();
-    requestAnimationFrame(gameLoop);
-    return;
-  }
-
-  // Goal / Door Reach Check
-  if (checkOverlap(player, activeLevel.door)) {
-    if (currentLevelIdx + 1 < LEVELS.length) {
-      loadLevel(currentLevelIdx + 1);
-    } else {
-      levelTitleEl.innerText = "GG! SARE LEVELS COMPLETE! 👑";
+    // Door Reached
+    if (checkOverlap(player, activeLevel.door)) {
+      showLevelCompleteModal();
     }
   }
 
-  // 1. Clear & Background Cyber Grid
+  // DRAW PASS
   ctx.fillStyle = '#0f0a1c';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  // Background Grid
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
   ctx.lineWidth = 1;
   for (let x = 0; x < canvas.width; x += 40) {
     ctx.beginPath();
@@ -131,15 +164,15 @@ function gameLoop() {
     ctx.stroke();
   }
 
-  // 2. Platforms
+  // Platforms
   for (const p of activeLevel.platforms) {
     ctx.fillStyle = '#22163b';
     ctx.fillRect(p.x, p.y, p.w, p.h);
     ctx.fillStyle = '#a855f7';
-    ctx.fillRect(p.x, p.y, p.w, 4); // Top glow line
+    ctx.fillRect(p.x, p.y, p.w, 4);
   }
 
-  // 3. Hazards / Spikes
+  // Hazards
   for (const h of activeLevel.hazards) {
     ctx.fillStyle = '#ff0055';
     ctx.beginPath();
@@ -149,14 +182,14 @@ function gameLoop() {
     ctx.fill();
   }
 
-  // 4. Portal Door
+  // Door
   const d = activeLevel.door;
   ctx.fillStyle = '#00f0ff';
   ctx.fillRect(d.x, d.y, d.w, d.h);
   ctx.fillStyle = '#0f0a1c';
   ctx.fillRect(d.x + 3, d.y + 3, d.w - 6, d.h - 6);
 
-  // 5. Draw Cyber Ninja
+  // Player
   player.draw(ctx);
 
   requestAnimationFrame(gameLoop);
@@ -164,4 +197,3 @@ function gameLoop() {
 
 loadLevel(0);
 requestAnimationFrame(gameLoop);
-
