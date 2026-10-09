@@ -3,20 +3,21 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-touch-callout: none;
+  -webkit-user-select: none;
   user-select: none;
   touch-action: none;
 }
 
 html, body {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   background: #090614;
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 #hud {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -24,70 +25,70 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 16px;
+  padding: 0 20px;
   background: rgba(10, 6, 20, 0.85);
-  border-bottom: 1px solid #ff0077;
+  border-bottom: 2px solid #ff0077;
   z-index: 100;
 }
 
 #level-title {
-  font-size: 13px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 800;
   color: #00f0ff;
+  letter-spacing: 0.5px;
 }
 
 #death-counter {
-  font-size: 13px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 800;
   color: #ff0055;
 }
 
-#game-container {
+#canvas-wrap {
   position: absolute;
-  top: 28px;
-  bottom: 0;
+  top: 0;
   left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100vw;
+  height: 100vh;
 }
 
-/* Canvas automatically scales without overflowing */
-#gameCanvas {
+canvas {
+  width: 100vw !important;
+  height: 100vh !important;
   display: block;
+  background: #0f0a1c;
 }
 
-/* Floating thumb buttons directly on screen */
 #controls {
-  position: absolute;
-  bottom: 10px;
+  position: fixed;
+  bottom: 16px;
   left: 0;
-  right: 0;
-  padding: 0 20px;
+  width: 100%;
+  padding: 0 25px;
   display: flex;
   justify-content: space-between;
   pointer-events: none;
-  z-index: 99;
+  z-index: 200;
 }
 
 .dpad, .actions {
   display: flex;
-  gap: 15px;
+  gap: 16px;
   pointer-events: auto;
 }
 
 .ctrl-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
   border: 2px solid rgba(0, 240, 255, 0.8);
-  background: rgba(15, 10, 28, 0.65);
+  background: rgba(15, 10, 28, 0.7);
   color: #00f0ff;
-  font-size: 20px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
 .ctrl-btn:active {
@@ -96,11 +97,12 @@ html, body {
 }
 
 .jump-btn {
-  width: 58px;
-  height: 58px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   border-color: #ff0077;
   color: #ff0077;
+  box-shadow: 0 0 10px rgba(255, 0, 119, 0.3);
 }
 
 .jump-btn:active {
