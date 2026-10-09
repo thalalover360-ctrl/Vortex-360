@@ -1,28 +1,12 @@
-// Game Engine for Vortex-360
+// Game Engine for Vortex-360 (Edge-to-Edge Fullscreen Edition)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const container = document.getElementById('game-container');
 const levelTitleEl = document.getElementById('level-title');
 const deathCounterEl = document.getElementById('death-counter');
 
-// Virtual Resolution (Game coordinates)
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 400;
-
-canvas.width = GAME_WIDTH;
-canvas.height = GAME_HEIGHT;
-
-// Auto-Fit Canvas to mobile landscape screen without cut
-function resizeCanvas() {
-  const containerW = container.clientWidth;
-  const containerH = container.clientHeight;
-  const scale = Math.min(containerW / GAME_WIDTH, containerH / GAME_HEIGHT);
-
-  canvas.style.width = `${GAME_WIDTH * scale}px`;
-  canvas.style.height = `${GAME_HEIGHT * scale}px`;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+// Wide screen resolution
+canvas.width = 960;
+canvas.height = 450;
 
 let currentLevelIdx = 0;
 let deathCount = 0;
@@ -33,13 +17,20 @@ const player = new Player();
 const rawInput = { left: false, right: false, jump: false };
 const effectiveInput = { left: false, right: false, jump: false };
 
-// Touch Handlers
+// Touch Input Handlers
 function setupTouchButton(id, key) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.addEventListener('touchstart', (e) => { e.preventDefault(); rawInput[key] = true; });
-  el.addEventListener('touchend', (e) => { e.preventDefault(); rawInput[key] = false; });
+  el.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    rawInput[key] = true;
+  });
+  el.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    rawInput[key] = false;
+  });
 }
+
 setupTouchButton('btn-left', 'left');
 setupTouchButton('btn-right', 'right');
 setupTouchButton('btn-jump', 'jump');
@@ -50,6 +41,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight' || e.key === 'd') rawInput.right = true;
   if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') rawInput.jump = true;
 });
+
 window.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowLeft' || e.key === 'a') rawInput.left = false;
   if (e.key === 'ArrowRight' || e.key === 'd') rawInput.right = false;
@@ -101,7 +93,7 @@ function gameLoop() {
 
   player.update(effectiveInput, activeLevel.platforms);
 
-  // Spikes check
+  // Spikes Check
   for (const h of activeLevel.hazards) {
     if (checkOverlap(player, h)) {
       handleDeath();
@@ -110,27 +102,26 @@ function gameLoop() {
     }
   }
 
-  // Fall check
+  // Fall Out of Screen Check
   if (player.y > canvas.height + 50) {
     handleDeath();
     requestAnimationFrame(gameLoop);
     return;
   }
 
-  // Win check
+  // Goal / Door Reach Check
   if (checkOverlap(player, activeLevel.door)) {
     if (currentLevelIdx + 1 < LEVELS.length) {
       loadLevel(currentLevelIdx + 1);
     } else {
-      levelTitleEl.innerText = "GG! SAB LEVELS PAR KAR LIYE! 👑";
+      levelTitleEl.innerText = "GG! SARE LEVELS COMPLETE! 👑";
     }
   }
 
-  // DRAW
+  // 1. Clear & Background Cyber Grid
   ctx.fillStyle = '#0f0a1c';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Neon Grid lines
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
   ctx.lineWidth = 1;
   for (let x = 0; x < canvas.width; x += 40) {
@@ -140,15 +131,15 @@ function gameLoop() {
     ctx.stroke();
   }
 
-  // Platforms
+  // 2. Platforms
   for (const p of activeLevel.platforms) {
     ctx.fillStyle = '#22163b';
     ctx.fillRect(p.x, p.y, p.w, p.h);
     ctx.fillStyle = '#a855f7';
-    ctx.fillRect(p.x, p.y, p.w, 4); // Glowing edge
+    ctx.fillRect(p.x, p.y, p.w, 4); // Top glow line
   }
 
-  // Hazards
+  // 3. Hazards / Spikes
   for (const h of activeLevel.hazards) {
     ctx.fillStyle = '#ff0055';
     ctx.beginPath();
@@ -158,14 +149,14 @@ function gameLoop() {
     ctx.fill();
   }
 
-  // Door
+  // 4. Portal Door
   const d = activeLevel.door;
   ctx.fillStyle = '#00f0ff';
   ctx.fillRect(d.x, d.y, d.w, d.h);
   ctx.fillStyle = '#0f0a1c';
   ctx.fillRect(d.x + 3, d.y + 3, d.w - 6, d.h - 6);
 
-  // Player
+  // 5. Draw Cyber Ninja
   player.draw(ctx);
 
   requestAnimationFrame(gameLoop);
@@ -173,3 +164,4 @@ function gameLoop() {
 
 loadLevel(0);
 requestAnimationFrame(gameLoop);
+
