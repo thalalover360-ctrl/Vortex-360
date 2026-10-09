@@ -7,15 +7,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="hud">
+    <span id="level-title">Level 1</span>
+    <span id="death-counter">Deaths: 0</span>
+  </div>
+
   <div id="game-container">
-    <div id="hud">
-      <span id="level-title">Level 1</span>
-      <span id="death-counter">Deaths: 0</span>
-    </div>
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-    <canvas id="gameCanvas"></canvas>
-
-    <!-- On-screen mobile touch controls -->
     <div id="controls">
       <div class="dpad">
         <button id="btn-left" class="ctrl-btn">◀</button>
