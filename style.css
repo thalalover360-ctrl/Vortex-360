@@ -3,94 +3,88 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
   user-select: none;
   touch-action: none;
 }
 
-body {
-  background: #06040a;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+html, body {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
+  background: #090614;
+  font-family: sans-serif;
 }
 
 #hud {
-  height: 36px;
-  min-height: 36px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
-  background: #0f0a1c;
-  border-bottom: 2px solid #ff0077;
-  z-index: 10;
+  background: rgba(10, 6, 20, 0.85);
+  border-bottom: 1px solid #ff0077;
+  z-index: 100;
 }
 
 #level-title {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: bold;
   color: #00f0ff;
-  letter-spacing: 0.5px;
 }
 
 #death-counter {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: bold;
   color: #ff0055;
 }
 
 #game-container {
-  flex: 1;
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 36px);
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  background: #090614;
 }
 
+/* Canvas automatically scales without overflowing */
 #gameCanvas {
-  max-width: 100%;
-  max-height: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: contain;
   display: block;
 }
 
+/* Floating thumb buttons directly on screen */
 #controls {
   position: absolute;
-  bottom: 12px;
+  bottom: 10px;
   left: 0;
   right: 0;
-  padding: 0 24px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
   pointer-events: none;
-  z-index: 20;
+  z-index: 99;
 }
 
 .dpad, .actions {
   display: flex;
-  gap: 14px;
+  gap: 15px;
   pointer-events: auto;
 }
 
 .ctrl-btn {
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  border: 2px solid rgba(0, 240, 255, 0.7);
-  background: rgba(15, 10, 28, 0.75);
-  backdrop-filter: blur(4px);
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 2px solid rgba(0, 240, 255, 0.8);
+  background: rgba(15, 10, 28, 0.65);
   color: #00f0ff;
-  font-size: 22px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,8 +96,8 @@ body {
 }
 
 .jump-btn {
-  width: 66px;
-  height: 66px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   border-color: #ff0077;
   color: #ff0077;
@@ -113,3 +107,4 @@ body {
   background: #ff0077;
   color: #fff;
 }
+
