@@ -1,10 +1,10 @@
-// Game Engine for Vortex-360
+// Game Engine for Vortex-360 (Vibrant & Landscape Edition)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const levelTitleEl = document.getElementById('level-title');
 const deathCounterEl = document.getElementById('death-counter');
 
-// Set virtual coordinate space
+// Native 16:9 widescreen canvas resolution
 canvas.width = 800;
 canvas.height = 400;
 
@@ -36,7 +36,7 @@ setupTouchButton('btn-left', 'left');
 setupTouchButton('btn-right', 'right');
 setupTouchButton('btn-jump', 'jump');
 
-// Keyboard Handlers (for testing)
+// Keyboard Handlers
 window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft' || e.key === 'a') rawInput.left = true;
   if (e.key === 'ArrowRight' || e.key === 'd') rawInput.right = true;
@@ -51,7 +51,6 @@ window.addEventListener('keyup', (e) => {
 
 function loadLevel(idx) {
   currentLevelIdx = idx;
-  // Deep clone level state so reset works properly
   const template = LEVELS[currentLevelIdx];
   activeLevel = {
     ...template,
@@ -80,7 +79,6 @@ function checkOverlap(r1, r2) {
 }
 
 function gameLoop() {
-  // Check for Inverted controls trap (Level 5)
   if (activeLevel.invertActive) {
     effectiveInput.left = rawInput.right;
     effectiveInput.right = rawInput.left;
@@ -90,15 +88,13 @@ function gameLoop() {
   }
   effectiveInput.jump = rawInput.jump;
 
-  // Run level specific trap scripts
   if (activeLevel.update) {
     activeLevel.update(player, effectiveInput);
   }
 
-  // Update Player Physics
   player.update(effectiveInput, activeLevel.platforms);
 
-  // Check Hazard Collision
+  // Hazard Collision
   for (const h of activeLevel.hazards) {
     if (checkOverlap(player, h)) {
       handleDeath();
@@ -107,59 +103,83 @@ function gameLoop() {
     }
   }
 
-  // Check Fall Out of World
+  // Fall Out of World
   if (player.y > canvas.height + 50) {
     handleDeath();
     requestAnimationFrame(gameLoop);
     return;
   }
 
-  // Check Level Win (Reach Door)
+  // Victory Check
   if (checkOverlap(player, activeLevel.door)) {
     if (currentLevelIdx + 1 < LEVELS.length) {
       loadLevel(currentLevelIdx + 1);
     } else {
-      levelTitleEl.innerText = "GG! ALL LEVELS CLEARED!";
+      levelTitleEl.innerText = "GG! SAB LEVELS PAR KAR LIYE! 👑";
     }
   }
 
-  // RENDER PASS
-  ctx.fillStyle = '#1f2833';
+  // 1. Background Grid & Space effect
+  ctx.fillStyle = '#0f0a1c';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw Platforms
-  ctx.fillStyle = '#45a29e';
-  for (const p of activeLevel.platforms) {
-    ctx.fillRect(p.x, p.y, p.w, p.h);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < canvas.width; x += 40) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
   }
 
-  // Draw Spikes / Hazards
-  ctx.fillStyle = '#ff0055';
+  // 2. Neon Platforms
+  for (const p of activeLevel.platforms) {
+    ctx.fillStyle = '#2d1b4e';
+    ctx.fillRect(p.x, p.y, p.w, p.h);
+
+    // Glowing Top Border
+    ctx.fillStyle = '#a855f7';
+    ctx.fillRect(p.x, p.y, p.w, 4);
+  }
+
+  // 3. Red Hazard Spikes
   for (const h of activeLevel.hazards) {
+    ctx.fillStyle = '#ff0055';
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = '#ff0055';
+
     ctx.beginPath();
     ctx.moveTo(h.x, h.y + h.h);
     ctx.lineTo(h.x + h.w / 2, h.y);
     ctx.lineTo(h.x + h.w, h.y + h.h);
     ctx.fill();
+
+    ctx.shadowBlur = 0;
   }
 
-  // Draw Door
+  // 4. Glowing Exit Portal / Door
   const d = activeLevel.door;
-  ctx.fillStyle = '#66fcf1';
+  ctx.fillStyle = '#00f0ff';
+  ctx.shadowBlur = 18;
+  ctx.shadowColor = '#00f0ff';
   ctx.fillRect(d.x, d.y, d.w, d.h);
-  // Door Knob
-  ctx.fillStyle = '#0b0c10';
-  ctx.beginPath();
-  ctx.arc(d.x + 6, d.y + d.h / 2, 3, 0, Math.PI * 2);
-  ctx.fill();
 
-  // Draw Player
+  ctx.fillStyle = '#0a0614';
+  ctx.fillRect(d.x + 4, d.y + 4, d.w - 8, d.h - 8);
+
+  ctx.fillStyle = '#00f0ff';
+  ctx.beginPath();
+  ctx.arc(d.x + d.w - 8, d.y + d.h / 2, 3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // 5. Draw Human Character
   player.draw(ctx);
 
   requestAnimationFrame(gameLoop);
 }
 
-// Start Game
+// Start Engine
 loadLevel(0);
 requestAnimationFrame(gameLoop);
 
