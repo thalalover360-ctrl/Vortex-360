@@ -9,8 +9,8 @@
 }
 
 html, body {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: #090614;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -21,50 +21,53 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 28px;
+  height: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  background: rgba(10, 6, 20, 0.85);
+  padding: 0 16px;
+  background: rgba(10, 6, 20, 0.9);
   border-bottom: 2px solid #ff0077;
   z-index: 100;
 }
 
 #level-title {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
   color: #00f0ff;
-  letter-spacing: 0.5px;
 }
 
 #death-counter {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
   color: #ff0055;
 }
 
 #canvas-wrap {
   position: absolute;
-  top: 0;
+  top: 24px;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 canvas {
-  width: 100vw !important;
-  height: 100vh !important;
+  max-width: 100vw;
+  max-height: calc(100vh - 24px);
+  aspect-ratio: 960 / 450;
+  object-fit: contain;
   display: block;
-  background: #0f0a1c;
 }
 
 #controls {
   position: fixed;
-  bottom: 16px;
+  bottom: 10px;
   left: 0;
   width: 100%;
-  padding: 0 25px;
+  padding: 0 20px;
   display: flex;
   justify-content: space-between;
   pointer-events: none;
@@ -73,22 +76,21 @@ canvas {
 
 .dpad, .actions {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   pointer-events: auto;
 }
 
 .ctrl-btn {
-  width: 62px;
-  height: 62px;
-  border-radius: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   border: 2px solid rgba(0, 240, 255, 0.8);
-  background: rgba(15, 10, 28, 0.7);
+  background: rgba(15, 10, 28, 0.65);
   color: #00f0ff;
-  font-size: 24px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
 .ctrl-btn:active {
@@ -97,12 +99,11 @@ canvas {
 }
 
 .jump-btn {
-  width: 70px;
-  height: 70px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   border-color: #ff0077;
   color: #ff0077;
-  box-shadow: 0 0 10px rgba(255, 0, 119, 0.3);
 }
 
 .jump-btn:active {
