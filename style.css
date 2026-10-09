@@ -9,110 +9,107 @@
 }
 
 body {
-  background: #0d0b18;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #06040a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow: hidden;
   height: 100vh;
   width: 100vw;
   display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#game-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at 50% 20%, #1a1235 0%, #0a0614 100%);
 }
 
 #hud {
+  height: 36px;
+  min-height: 36px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 24px;
-  background: rgba(15, 10, 30, 0.85);
+  padding: 0 16px;
+  background: #0f0a1c;
   border-bottom: 2px solid #ff0077;
-  box-shadow: 0 4px 15px rgba(255, 0, 119, 0.2);
+  z-index: 10;
 }
 
 #level-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
-  letter-spacing: 1px;
   color: #00f0ff;
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+  letter-spacing: 0.5px;
 }
 
 #death-counter {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: #ff0055;
-  text-shadow: 0 0 10px rgba(255, 0, 85, 0.6);
+}
+
+#game-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 36px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #090614;
 }
 
 #gameCanvas {
-  flex: 1;
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
   display: block;
 }
 
-/* Semi-transparent thumb overlay controls */
 #controls {
   position: absolute;
   bottom: 12px;
   left: 0;
   right: 0;
-  height: 90px;
-  padding: 0 30px;
+  padding: 0 24px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   pointer-events: none;
+  z-index: 20;
 }
 
 .dpad, .actions {
   display: flex;
-  gap: 18px;
+  gap: 14px;
   pointer-events: auto;
 }
 
 .ctrl-btn {
-  width: 65px;
-  height: 65px;
-  border-radius: 18px;
-  border: 2px solid rgba(0, 240, 255, 0.6);
-  background: rgba(13, 11, 24, 0.6);
-  backdrop-filter: blur(8px);
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  border: 2px solid rgba(0, 240, 255, 0.7);
+  background: rgba(15, 10, 28, 0.75);
+  backdrop-filter: blur(4px);
   color: #00f0ff;
-  font-size: 26px;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-  transition: transform 0.08s;
 }
 
 .ctrl-btn:active {
-  transform: scale(0.92);
   background: #00f0ff;
-  color: #0d0b18;
+  color: #000;
 }
 
 .jump-btn {
-  width: 75px;
-  height: 75px;
+  width: 66px;
+  height: 66px;
   border-radius: 50%;
   border-color: #ff0077;
   color: #ff0077;
-  box-shadow: 0 0 18px rgba(255, 0, 119, 0.4);
 }
 
 .jump-btn:active {
   background: #ff0077;
   color: #fff;
 }
-
