@@ -1,4 +1,4 @@
-// Game Engine with Dynamic Mobile Viewport Scaler
+// Game Engine with Zoomed Virtual Resolution (720x340)
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const container = document.getElementById('canvas-wrap');
@@ -24,12 +24,12 @@ const btnMenu = document.getElementById('btn-menu');
 const btnRestart = document.getElementById('btn-restart');
 const btnCloseMenu = document.getElementById('btn-close-menu');
 
-const GAME_W = 960;
-const GAME_H = 450;
+// Scaled Up Virtual Viewport
+const GAME_W = 720;
+const GAME_H = 340;
 canvas.width = GAME_W;
 canvas.height = GAME_H;
 
-// Precise Canvas Auto-Fit Function
 function resizeCanvas() {
   const availW = container.clientWidth;
   const availH = container.clientHeight;
@@ -218,7 +218,7 @@ function gameLoop() {
       }
     }
 
-    if (player.y > canvas.height + 50) {
+    if (player.y > canvas.height + 60) {
       handleDeath();
       requestAnimationFrame(gameLoop);
       return;
@@ -236,7 +236,7 @@ function gameLoop() {
   // Grid
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
   ctx.lineWidth = 1;
-  for (let x = 0; x < canvas.width; x += 40) {
+  for (let x = 0; x < canvas.width; x += 36) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
     ctx.lineTo(x, canvas.height);
@@ -244,15 +244,15 @@ function gameLoop() {
   }
 
   if (activeLevel) {
-    // Platforms
+    // Platforms (Bolder)
     for (const p of activeLevel.platforms) {
-      ctx.fillStyle = '#22163b';
+      ctx.fillStyle = '#1c1233';
       ctx.fillRect(p.x, p.y, p.w, p.h);
       ctx.fillStyle = '#a855f7';
-      ctx.fillRect(p.x, p.y, p.w, 4);
+      ctx.fillRect(p.x, p.y, p.w, 5); // Thicker top edge
     }
 
-    // Hazards
+    // Hazards (Bigger Spikes)
     for (const h of activeLevel.hazards) {
       ctx.fillStyle = '#ff0055';
       ctx.beginPath();
@@ -262,12 +262,12 @@ function gameLoop() {
       ctx.fill();
     }
 
-    // Door
+    // Door (Larger Portal)
     const d = activeLevel.door;
     ctx.fillStyle = '#00f0ff';
     ctx.fillRect(d.x, d.y, d.w, d.h);
     ctx.fillStyle = '#0f0a1c';
-    ctx.fillRect(d.x + 3, d.y + 3, d.w - 6, d.h - 6);
+    ctx.fillRect(d.x + 4, d.y + 4, d.w - 8, d.h - 8);
 
     // Player
     player.draw(ctx);
@@ -279,3 +279,4 @@ function gameLoop() {
 loadLevel(0);
 isLevelPaused = true;
 requestAnimationFrame(gameLoop);
+      
