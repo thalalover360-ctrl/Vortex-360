@@ -1,6 +1,7 @@
-// Game Engine with Home Screen, 100-Level Menu & Trap System
+// Game Engine with Dynamic Mobile Viewport Scaler
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const container = document.getElementById('canvas-wrap');
 const levelTitleEl = document.getElementById('level-title');
 const deathCounterEl = document.getElementById('death-counter');
 
@@ -23,8 +24,23 @@ const btnMenu = document.getElementById('btn-menu');
 const btnRestart = document.getElementById('btn-restart');
 const btnCloseMenu = document.getElementById('btn-close-menu');
 
-canvas.width = 960;
-canvas.height = 450;
+const GAME_W = 960;
+const GAME_H = 450;
+canvas.width = GAME_W;
+canvas.height = GAME_H;
+
+// Precise Canvas Auto-Fit Function
+function resizeCanvas() {
+  const availW = container.clientWidth;
+  const availH = container.clientHeight;
+  const scale = Math.min(availW / GAME_W, availH / GAME_H);
+
+  canvas.style.width = `${Math.floor(GAME_W * scale)}px`;
+  canvas.style.height = `${Math.floor(GAME_H * scale)}px`;
+}
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 150));
+resizeCanvas();
 
 // Save Progress
 let unlockedLevel = parseInt(localStorage.getItem('vortex_unlocked_lvl')) || 1;
@@ -32,7 +48,7 @@ let currentLevelIdx = 0;
 let totalDeaths = 0;
 let levelDeaths = 0;
 let activeLevel = null;
-let isLevelPaused = true; // Paused at Start Screen
+let isLevelPaused = true;
 
 const player = new Player();
 
@@ -64,16 +80,15 @@ window.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') rawInput.jump = false;
 });
 
-// Home Screen Listeners
+// Home Listeners
 btnStartGame.onclick = () => {
   homeScreen.classList.add('hidden');
   isLevelPaused = false;
+  resizeCanvas();
   loadLevel(unlockedLevel - 1);
 };
 
-btnHomeLevels.onclick = () => {
-  openLevelSelector();
-};
+btnHomeLevels.onclick = () => openLevelSelector();
 
 btnHome.onclick = () => {
   isLevelPaused = true;
@@ -82,7 +97,6 @@ btnHome.onclick = () => {
   modalOverlay.classList.add('hidden');
 };
 
-// UI Menu Listeners
 btnMenu.onclick = () => openLevelSelector();
 btnCloseMenu.onclick = () => levelSelectModal.classList.add('hidden');
 btnRestart.onclick = () => loadLevel(currentLevelIdx);
@@ -152,7 +166,7 @@ function handleDeath() {
 function showLevelCompleteModal() {
   isLevelPaused = true;
   modalTitle.innerText = `${activeLevel.name} Cleared!`;
-  modalStats.innerText = `Deaths on this level: ${levelDeaths} | Total Deaths: ${totalDeaths}`;
+  modalStats.innerText = `Deaths: ${levelDeaths} | Total Deaths: ${totalDeaths}`;
 
   if (activeLevel.id >= unlockedLevel) {
     unlockedLevel = activeLevel.id + 1;
@@ -163,7 +177,7 @@ function showLevelCompleteModal() {
     btnNextLevel.innerText = "NEXT LEVEL ▶";
     btnNextLevel.onclick = () => loadLevel(currentLevelIdx + 1);
   } else {
-    btnNextLevel.innerText = "COMPLETED 100! 👑";
+    btnNextLevel.innerText = "ALL 100 CLEARED! 👑";
     btnNextLevel.onclick = () => openLevelSelector();
   }
 
@@ -262,8 +276,6 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Start in Home Screen state
 loadLevel(0);
 isLevelPaused = true;
 requestAnimationFrame(gameLoop);
-
