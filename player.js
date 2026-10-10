@@ -1,9 +1,9 @@
-// Player Class - Vortex-360 (Scaled Up Edition)
+// Dynamic Cyber Ninja Sprite - Vortex-360
 class Player {
   constructor() {
-    this.width = 28;
-    this.height = 38;
-    this.x = 60;
+    this.width = 24;
+    this.height = 36;
+    this.x = 50;
     this.y = 150;
     this.vx = 0;
     this.vy = 0;
@@ -11,7 +11,8 @@ class Player {
     this.jumpForce = -11.5;
     this.gravity = 0.58;
     this.isGrounded = false;
-    this.facing = 1; // 1 = right, -1 = left
+    this.facing = 1;
+    this.animTimer = 0;
     this.trail = [];
   }
 
@@ -21,20 +22,26 @@ class Player {
     this.vx = 0;
     this.vy = 0;
     this.isGrounded = false;
+    this.animTimer = 0;
     this.trail = [];
   }
 
   update(input, platforms) {
-    // Left / Right Movement
+    // Movement
     if (input.left) {
       this.vx = -this.speed;
       this.facing = -1;
+      this.animTimer += 0.25;
     } else if (input.right) {
       this.vx = this.speed;
       this.facing = 1;
+      this.animTimer += 0.25;
     } else {
-      this.vx *= 0.78;
-      if (Math.abs(this.vx) < 0.1) this.vx = 0;
+      this.vx *= 0.76;
+      if (Math.abs(this.vx) < 0.1) {
+        this.vx = 0;
+        this.animTimer = 0;
+      }
     }
 
     // Jump
@@ -43,11 +50,11 @@ class Player {
       this.isGrounded = false;
     }
 
-    // Apply Gravity
+    // Gravity
     this.vy += this.gravity;
     if (this.vy > 13) this.vy = 13;
 
-    // Horizontal Movement & Collisions
+    // Horizontal collision
     this.x += this.vx;
     for (const p of platforms) {
       if (this.checkCollision(this, p)) {
@@ -57,7 +64,7 @@ class Player {
       }
     }
 
-    // Vertical Movement & Collisions
+    // Vertical collision
     this.y += this.vy;
     this.isGrounded = false;
     for (const p of platforms) {
@@ -73,8 +80,8 @@ class Player {
       }
     }
 
-    // Trail FX
-    if (Math.abs(this.vx) > 1 || Math.abs(this.vy) > 1) {
+    // Ghost Dash Trail
+    if (Math.abs(this.vx) > 1.5 || !this.isGrounded) {
       this.trail.push({ x: this.x, y: this.y, alpha: 0.5 });
       if (this.trail.length > 5) this.trail.shift();
     }
@@ -92,43 +99,104 @@ class Player {
   }
 
   draw(ctx) {
-    // Neon Ghost Trail
+    // 1. Ghost Trails
     for (const t of this.trail) {
-      ctx.fillStyle = `rgba(0, 240, 255, ${Math.max(0, t.alpha * 0.4)})`;
-      ctx.fillRect(t.x, t.y, this.width, this.height);
+      ctx.fillStyle = `rgba(0, 240, 255, ${Math.max(0, t.alpha * 0.35)})`;
+      ctx.beginPath();
+      ctx.arc(t.x + this.width / 2, t.y + 10, 8, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     ctx.save();
     ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
     if (this.facing === -1) ctx.scale(-1, 1);
 
-    const w = this.width;
-    const h = this.height;
+    const legSwing = Math.sin(this.animTimer) * 7;
 
-    // Body (Cyber Suit)
-    ctx.fillStyle = '#0a0d1a';
-    ctx.fillRect(-w / 2, -h / 2, w, h);
+    // 2. Flowing Scarf / Headband Ribbons (Animated wave)
+    ctx.strokeStyle = '#ff0077';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = '#ff0077';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    const wave = Math.sin(Date.now() / 90) * 4;
+    ctx.moveTo(-5, -11);
+    ctx.quadraticCurveTo(-15, -9 + wave, -22, -14 - wave);
+    ctx.moveTo(-5, -9);
+    ctx.quadraticCurveTo(-14, -5 + wave, -19, -8 - wave);
+    ctx.stroke();
+
+    // 3. Ninja Legs (Running & Jump Poses)
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#18122c';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+
+    if (!this.isGrounded) {
+      // In-air tuck / jump kick
+      ctx.beginPath();
+      ctx.moveTo(-3, 6);
+      ctx.lineTo(-7, 14); // Back leg bent
+      ctx.moveTo(3, 6);
+      ctx.lineTo(8, 16);  // Front kick
+      ctx.stroke();
+    } else {
+      // Running step animation
+      ctx.beginPath();
+      ctx.moveTo(-3, 6);
+      ctx.lineTo(-3 - legSwing, 17);
+      ctx.moveTo(3, 6);
+      ctx.lineTo(3 + legSwing, 17);
+      ctx.stroke();
+    }
+
+    // 4. Shin Guards (Neon accents)
     ctx.strokeStyle = '#00f0ff';
     ctx.lineWidth = 2;
-    ctx.strokeRect(-w / 2, -h / 2, w, h);
+    if (this.isGrounded) {
+      ctx.beginPath();
+      ctx.moveTo(-3 - legSwing, 12);
+      ctx.lineTo(-3 - legSwing, 16);
+      ctx.moveTo(3 + legSwing, 12);
+      ctx.lineTo(3 + legSwing, 16);
+      ctx.stroke();
+    }
 
-    // Glowing Neon Visor
+    // 5. Ninja Torso (Cyber Armor)
+    ctx.fillStyle = '#0f0a1c';
+    ctx.beginPath();
+    ctx.moveTo(-7, -4);
+    ctx.lineTo(7, -4);
+    ctx.lineTo(5, 7);
+    ctx.lineTo(-5, 7);
+    ctx.closePath();
+    ctx.fill();
+
+    // Armor line highlight
+    ctx.strokeStyle = '#a855f7';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, -4);
+    ctx.lineTo(0, 7);
+    ctx.stroke();
+
+    // 6. Masked Head (Ninja Cowl)
+    ctx.fillStyle = '#140e26';
+    ctx.beginPath();
+    ctx.arc(0, -11, 7.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Headband
+    ctx.fillStyle = '#ff0077';
+    ctx.fillRect(-7.5, -14, 15, 3.5);
+
+    // 7. Cyan Visor / Glowing Cyber Eye
     ctx.fillStyle = '#00f0ff';
     ctx.shadowColor = '#00f0ff';
-    ctx.shadowBlur = 8;
-    ctx.fillRect(2, -h / 2 + 6, 8, 5);
-
-    // Scarf / Cape Flow
-    ctx.shadowColor = '#ff0077';
-    ctx.shadowBlur = 6;
-    ctx.fillStyle = '#ff0077';
-    ctx.beginPath();
-    ctx.moveTo(-w / 2 + 2, -h / 2 + 10);
-    ctx.lineTo(-w / 2 - 8, -h / 2 + 16);
-    ctx.lineTo(-w / 2 + 2, -h / 2 + 14);
-    ctx.fill();
+    ctx.shadowBlur = 9;
+    ctx.fillRect(1, -12, 6, 2.5);
 
     ctx.restore();
   }
 }
-
