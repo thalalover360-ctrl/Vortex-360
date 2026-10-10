@@ -7,9 +7,36 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- HOME / MAIN MENU OVERLAY -->
+  <div id="home-screen" class="modal-overlay">
+    <div class="home-card">
+      <div class="home-glow-badge">CYBER PLATFORMER</div>
+      <h1 class="home-title">VORTEX-<span>360</span></h1>
+      <p class="home-tagline">100 Levels of Troll Traps & High-Speed Ninja Action</p>
+
+      <div class="about-box">
+        <h3>⚡ ABOUT THE GAME</h3>
+        <p>Vortex-360 ek mobile-first reflex platformer hai. Aap Cyber Ninja ho jisko 100 mysterious neon sectors cross karne hain. Lekin dhyan rahe—zameen gir sakti hai, darwaze bhaag sakte hain, aur controls reverse ho sakte hain!</p>
+        
+        <div class="guide-chips">
+          <span>◀ ▶ Run</span>
+          <span>▲ Ninja Jump</span>
+          <span>🚪 Reach Portal</span>
+          <span>💀 Beware of Traps</span>
+        </div>
+      </div>
+
+      <div class="home-actions">
+        <button id="btn-start-game" class="neon-btn large-btn">START MISSION ▶</button>
+        <button id="btn-home-levels" class="secondary-btn">LEVELS (1-100) ☰</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOP HUD -->
   <div id="hud">
     <div class="hud-left">
+      <button id="btn-home" class="icon-btn">🏠 HOME</button>
       <button id="btn-menu" class="icon-btn">☰ LEVELS</button>
       <button id="btn-restart" class="icon-btn">↺ RETRY</button>
       <span id="level-title">Level 1: Watch Your Step</span>
@@ -64,3 +91,4 @@
   <script src="engine.js"></script>
 </body>
 </html>
+
