@@ -21,32 +21,54 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 26px;
+  height: 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
-  background: rgba(10, 6, 20, 0.9);
+  background: rgba(10, 6, 20, 0.95);
   border-bottom: 2px solid #ff0077;
   z-index: 100;
 }
 
-#level-title {
-  font-size: 12px;
-  font-weight: 800;
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-btn {
+  background: rgba(0, 240, 255, 0.15);
+  border: 1px solid #00f0ff;
   color: #00f0ff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.icon-btn:active {
+  background: #00f0ff;
+  color: #000;
+}
+
+#level-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
   letter-spacing: 0.5px;
 }
 
 #death-counter {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   color: #ff0055;
 }
 
 #canvas-wrap {
   position: absolute;
-  top: 26px;
+  top: 32px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -57,15 +79,16 @@ html, body {
 
 canvas {
   max-width: 100vw;
-  max-height: calc(100vh - 26px);
+  max-height: calc(100vh - 32px);
   aspect-ratio: 960 / 450;
   object-fit: contain;
   display: block;
 }
 
+/* Touch Controls */
 #controls {
   position: fixed;
-  bottom: 10px;
+  bottom: 12px;
   left: 0;
   width: 100%;
   padding: 0 20px;
@@ -82,11 +105,11 @@ canvas {
 }
 
 .ctrl-btn {
-  width: 52px;
-  height: 52px;
+  width: 54px;
+  height: 54px;
   border-radius: 14px;
   border: 2px solid rgba(0, 240, 255, 0.8);
-  background: rgba(15, 10, 28, 0.65);
+  background: rgba(15, 10, 28, 0.7);
   color: #00f0ff;
   font-size: 20px;
   display: flex;
@@ -100,8 +123,8 @@ canvas {
 }
 
 .jump-btn {
-  width: 58px;
-  height: 58px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   border-color: #ff0077;
   color: #ff0077;
@@ -112,53 +135,50 @@ canvas {
   color: #fff;
 }
 
-/* Modal Popup UI */
-#modal-overlay {
+/* MODALS */
+.modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(5, 3, 10, 0.8);
-  backdrop-filter: blur(6px);
+  background: rgba(5, 3, 10, 0.85);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 300;
-  transition: opacity 0.2s ease;
 }
 
-#modal-overlay.hidden {
-  display: none;
-  opacity: 0;
-  pointer-events: none;
+.modal-overlay.hidden {
+  display: none !important;
 }
 
+/* VICTORY MODAL */
 .modal-card {
   background: linear-gradient(145deg, #16102b, #0d091a);
   border: 2px solid #00f0ff;
   box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
   border-radius: 18px;
-  padding: 24px 36px;
+  padding: 24px 32px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  min-width: 280px;
+  gap: 12px;
+  min-width: 290px;
 }
 
 .modal-badge {
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 2px;
-  color: #ff0077;
-  background: rgba(255, 0, 119, 0.15);
+  color: #00f0ff;
+  background: rgba(0, 240, 255, 0.15);
   padding: 4px 12px;
   border-radius: 20px;
-  border: 1px solid #ff0077;
+  border: 1px solid #00f0ff;
 }
 
 .modal-card h2 {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 20px;
   color: #fff;
 }
 
@@ -167,21 +187,111 @@ canvas {
   color: #a8a3c0;
 }
 
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
 .neon-btn {
-  margin-top: 8px;
-  padding: 12px 28px;
-  border-radius: 12px;
+  padding: 10px 20px;
+  border-radius: 10px;
   border: none;
   background: linear-gradient(90deg, #00f0ff, #7000ff);
   color: #fff;
   font-weight: 800;
-  font-size: 14px;
-  letter-spacing: 1px;
+  font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
 }
 
-.neon-btn:active {
-  transform: scale(0.96);
+.secondary-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid #ff0077;
+  background: rgba(255, 0, 119, 0.2);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* 100 LEVEL SELECT MENU */
+.menu-card {
+  width: 90vw;
+  max-width: 800px;
+  height: 80vh;
+  background: #110b24;
+  border: 2px solid #a855f7;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(168, 85, 247, 0.3);
+  padding-bottom: 8px;
+}
+
+.menu-header h2 {
+  font-size: 16px;
+  color: #a855f7;
+  letter-spacing: 1px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #ff0055;
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.level-grid-container {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+  gap: 10px;
+  padding: 6px;
+}
+
+.level-node {
+  height: 52px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #777;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: not-allowed;
+}
+
+.level-node.unlocked {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: #00f0ff;
+  color: #00f0ff;
+  cursor: pointer;
+}
+
+.level-node.cleared {
+  background: rgba(168, 85, 247, 0.3);
+  border-color: #a855f7;
+  color: #fff;
+  cursor: pointer;
+}
+
+.level-node.active-level {
+  border-color: #ff0077;
+  box-shadow: 0 0 10px #ff0077;
+  color: #ff0077;
 }
 
