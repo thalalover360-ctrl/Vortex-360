@@ -1,8 +1,14 @@
-// Game Engine with 100-Level Menu & Interface Integration
+// Game Engine with Home Screen, 100-Level Menu & Trap System
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const levelTitleEl = document.getElementById('level-title');
 const deathCounterEl = document.getElementById('death-counter');
+
+// Home Screen Elements
+const homeScreen = document.getElementById('home-screen');
+const btnStartGame = document.getElementById('btn-start-game');
+const btnHomeLevels = document.getElementById('btn-home-levels');
+const btnHome = document.getElementById('btn-home');
 
 // Modals & UI Elements
 const modalOverlay = document.getElementById('modal-overlay');
@@ -20,13 +26,13 @@ const btnCloseMenu = document.getElementById('btn-close-menu');
 canvas.width = 960;
 canvas.height = 450;
 
-// Save Progress (Max Level Cleared)
+// Save Progress
 let unlockedLevel = parseInt(localStorage.getItem('vortex_unlocked_lvl')) || 1;
 let currentLevelIdx = 0;
 let totalDeaths = 0;
 let levelDeaths = 0;
 let activeLevel = null;
-let isLevelPaused = false;
+let isLevelPaused = true; // Paused at Start Screen
 
 const player = new Player();
 
@@ -58,6 +64,24 @@ window.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') rawInput.jump = false;
 });
 
+// Home Screen Listeners
+btnStartGame.onclick = () => {
+  homeScreen.classList.add('hidden');
+  isLevelPaused = false;
+  loadLevel(unlockedLevel - 1);
+};
+
+btnHomeLevels.onclick = () => {
+  openLevelSelector();
+};
+
+btnHome.onclick = () => {
+  isLevelPaused = true;
+  homeScreen.classList.remove('hidden');
+  levelSelectModal.classList.add('hidden');
+  modalOverlay.classList.add('hidden');
+};
+
 // UI Menu Listeners
 btnMenu.onclick = () => openLevelSelector();
 btnCloseMenu.onclick = () => levelSelectModal.classList.add('hidden');
@@ -73,10 +97,18 @@ function renderLevelGrid() {
 
     if (i < unlockedLevel) {
       node.classList.add('cleared');
-      node.onclick = () => { loadLevel(i - 1); levelSelectModal.classList.add('hidden'); };
+      node.onclick = () => { 
+        loadLevel(i - 1); 
+        levelSelectModal.classList.add('hidden'); 
+        homeScreen.classList.add('hidden'); 
+      };
     } else if (i === unlockedLevel) {
       node.classList.add('unlocked');
-      node.onclick = () => { loadLevel(i - 1); levelSelectModal.classList.add('hidden'); };
+      node.onclick = () => { 
+        loadLevel(i - 1); 
+        levelSelectModal.classList.add('hidden'); 
+        homeScreen.classList.add('hidden'); 
+      };
     }
 
     if (i - 1 === currentLevelIdx) {
@@ -122,7 +154,6 @@ function showLevelCompleteModal() {
   modalTitle.innerText = `${activeLevel.name} Cleared!`;
   modalStats.innerText = `Deaths on this level: ${levelDeaths} | Total Deaths: ${totalDeaths}`;
 
-  // Update Progress
   if (activeLevel.id >= unlockedLevel) {
     unlockedLevel = activeLevel.id + 1;
     localStorage.setItem('vortex_unlocked_lvl', unlockedLevel);
@@ -149,7 +180,7 @@ function checkOverlap(r1, r2) {
 }
 
 function gameLoop() {
-  if (!isLevelPaused) {
+  if (!isLevelPaused && activeLevel) {
     if (activeLevel.invertActive) {
       effectiveInput.left = rawInput.right;
       effectiveInput.right = rawInput.left;
@@ -184,7 +215,7 @@ function gameLoop() {
     }
   }
 
-  // Draw
+  // Draw Pass
   ctx.fillStyle = '#0f0a1c';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -198,36 +229,41 @@ function gameLoop() {
     ctx.stroke();
   }
 
-  // Platforms
-  for (const p of activeLevel.platforms) {
-    ctx.fillStyle = '#22163b';
-    ctx.fillRect(p.x, p.y, p.w, p.h);
-    ctx.fillStyle = '#a855f7';
-    ctx.fillRect(p.x, p.y, p.w, 4);
+  if (activeLevel) {
+    // Platforms
+    for (const p of activeLevel.platforms) {
+      ctx.fillStyle = '#22163b';
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.fillStyle = '#a855f7';
+      ctx.fillRect(p.x, p.y, p.w, 4);
+    }
+
+    // Hazards
+    for (const h of activeLevel.hazards) {
+      ctx.fillStyle = '#ff0055';
+      ctx.beginPath();
+      ctx.moveTo(h.x, h.y + h.h);
+      ctx.lineTo(h.x + h.w / 2, h.y);
+      ctx.lineTo(h.x + h.w, h.y + h.h);
+      ctx.fill();
+    }
+
+    // Door
+    const d = activeLevel.door;
+    ctx.fillStyle = '#00f0ff';
+    ctx.fillRect(d.x, d.y, d.w, d.h);
+    ctx.fillStyle = '#0f0a1c';
+    ctx.fillRect(d.x + 3, d.y + 3, d.w - 6, d.h - 6);
+
+    // Player
+    player.draw(ctx);
   }
-
-  // Hazards
-  for (const h of activeLevel.hazards) {
-    ctx.fillStyle = '#ff0055';
-    ctx.beginPath();
-    ctx.moveTo(h.x, h.y + h.h);
-    ctx.lineTo(h.x + h.w / 2, h.y);
-    ctx.lineTo(h.x + h.w, h.y + h.h);
-    ctx.fill();
-  }
-
-  // Door
-  const d = activeLevel.door;
-  ctx.fillStyle = '#00f0ff';
-  ctx.fillRect(d.x, d.y, d.w, d.h);
-  ctx.fillStyle = '#0f0a1c';
-  ctx.fillRect(d.x + 3, d.y + 3, d.w - 6, d.h - 6);
-
-  // Player
-  player.draw(ctx);
 
   requestAnimationFrame(gameLoop);
 }
 
+// Start in Home Screen state
 loadLevel(0);
+isLevelPaused = true;
 requestAnimationFrame(gameLoop);
+
