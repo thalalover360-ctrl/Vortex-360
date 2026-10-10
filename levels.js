@@ -479,8 +479,8 @@ const LEVELS = [
       if (spk && player.x > 260) spk.y += 16;
       if (p1 && player.x > 190 && player.isGrounded) p1.y += 5;
     }
-  }
-];
+  },
+
   // Level 26: Fake Safe Zone (Platform drops when you stop)
   {
     id: 26,
@@ -1016,7 +1016,7 @@ const LEVELS = [
       if (cr && player.x > 190 && player.isGrounded) cr.y += 6;
       if (las) las.y = (Math.floor(this.timer / 35) % 2 === 0) ? 60 : -500;
     }
-  }
+  },
       // Level 51: Shrinking Runway Jump
   {
     id: 51,
@@ -1558,7 +1558,7 @@ const LEVELS = [
       if (s1 && player.x > s1.x - 5 && player.isGrounded) s1.y += 5.5;
       if (s2 && player.x > s2.x - 5 && player.isGrounded) s2.y += 5.5;
     }
-      }
+      },
         // Level 76: Floor Fakeout to High Platform
   {
     id: 76,
