@@ -7,16 +7,24 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- TOP HUD -->
   <div id="hud">
-    <span id="level-title">Level 1: Watch Your Step</span>
-    <span id="death-counter">Deaths: 0</span>
+    <div class="hud-left">
+      <button id="btn-menu" class="icon-btn">☰ LEVELS</button>
+      <button id="btn-restart" class="icon-btn">↺ RETRY</button>
+      <span id="level-title">Level 1: Watch Your Step</span>
+    </div>
+    <div class="hud-right">
+      <span id="death-counter">Deaths: 0</span>
+    </div>
   </div>
 
+  <!-- CANVAS WRAPPER -->
   <div id="canvas-wrap">
     <canvas id="gameCanvas" width="960" height="450"></canvas>
   </div>
 
-  <!-- Touch Controls -->
+  <!-- TOUCH CONTROLS -->
   <div id="controls">
     <div class="dpad">
       <button id="btn-left" class="ctrl-btn">◀</button>
@@ -27,13 +35,27 @@
     </div>
   </div>
 
-  <!-- Level Complete / Victory Modal -->
-  <div id="modal-overlay" class="hidden">
+  <!-- 100 LEVEL SELECT OVERLAY -->
+  <div id="level-select-modal" class="modal-overlay hidden">
+    <div class="menu-card">
+      <div class="menu-header">
+        <h2>SELECT LEVEL (1 - 100)</h2>
+        <button id="btn-close-menu" class="close-btn">✕</button>
+      </div>
+      <div id="level-grid" class="level-grid-container"></div>
+    </div>
+  </div>
+
+  <!-- LEVEL VICTORY OVERLAY -->
+  <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal-card">
       <div class="modal-badge">CLEARED!</div>
       <h2 id="modal-title">Level 1 Complete</h2>
       <p id="modal-stats">Deaths this level: 0</p>
-      <button id="btn-next-level" class="neon-btn">NEXT LEVEL ▶</button>
+      <div class="modal-actions">
+        <button id="btn-replay-level" class="secondary-btn">RETRY ↺</button>
+        <button id="btn-next-level" class="neon-btn">NEXT LEVEL ▶</button>
+      </div>
     </div>
   </div>
 
@@ -42,4 +64,3 @@
   <script src="engine.js"></script>
 </body>
 </html>
-
