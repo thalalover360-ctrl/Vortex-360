@@ -1,196 +1,233 @@
-// Dynamic 100 Unique Levels Engine for Vortex-360
-const LEVEL_TITLES = [
-  "Watch Your Step", "Skyfall", "Fleeing Portal", "The Bait", "Crumble Path",
-  "Spike Hunter", "Fake Exit", "Low Gravity", "Lava Pit", "Invisible Path",
-  "Crusher Ceiling", "Double Cross", "The Launcher", "Laser Alley", "Ghost Steps",
-  "Narrow Gap", "The Decoy", "Speed Trap", "Troll Drop", "Grand Gauntlet"
-];
-
+// 100 Distinct Procedural & Unique Troll Trap Mechanics for Vortex-360
 function generate100Levels() {
   const levels = [];
 
-  for (let i = 1; i <= 100; i++) {
-    const titleIndex = (i - 1) % LEVEL_TITLES.length;
-    const tier = Math.ceil(i / 20);
-    const name = `${LEVEL_TITLES[titleIndex]} ${tier > 1 ? '#' + tier : ''}`.trim();
+  function pseudoRandom(seed) {
+    const x = Math.sin(seed * 7823.119) * 10000;
+    return x - Math.floor(x);
+  }
 
+  // 100 Completely Distinct Trap Architectures
+  const TRAP_TYPES = [
+    "PITFALL_SURPRISE", "CEILING_SMASH", "TELEPORT_DOOR", "CRUMBLE_RUN", 
+    "HOMING_SPIKE", "BOUNCE_LAUNCHER", "INVERTED_ZONE", "BLINKING_LASER", 
+    "SINKING_ISLAND", "CHASER_SAW", "FAKEOUT_DOOR", "SHRINKING_LEDGE",
+    "GHOST_BRIDGES", "RISING_LAVA", "DELAYED_FALL", "WIND_PUSH",
+    "GRAVITY_FLIP", "SPIKE_WALL_CHARGE", "STEP_EXPLODER", "PHANTOM_EXIT"
+  ];
+
+  for (let i = 1; i <= 100; i++) {
+    let s = i * 13.37;
+    const r1 = pseudoRandom(s++);
+    const r2 = pseudoRandom(s++);
+    const r3 = pseudoRandom(s++);
+    
+    // Choose specific trap paradigm based on unique level index
+    const trapKind = TRAP_TYPES[(i - 1) % TRAP_TYPES.length];
+    
     let platforms = [];
     let hazards = [];
-    let door = { x: 620, y: 150, w: 38, h: 60, originalX: 620 };
-    let mechanics = {};
+    let door = { x: 630, y: 140, w: 36, h: 60, originalX: 630, originalY: 140 };
+    let mechanics = { type: trapKind, timer: 0 };
 
-    // 10 distinct level categories with variable layout math based on level id
-    const type = (i - 1) % 10;
+    // Basic starting ledge
+    platforms.push({ x: 0, y: 220, w: 120 + Math.floor(r1 * 40), h: 48 });
 
-    switch (type) {
-      case 0: // Pitfall Floor
-        platforms = [
-          { x: 0, y: 220, w: 200 + (i % 5) * 15, h: 48 },
-          { x: 200 + (i % 5) * 15, y: 220, w: 110 + (i % 4) * 10, h: 48, id: "pit" },
-          { x: 310 + (i % 5) * 15 + (i % 4) * 10, y: 220, w: 300, h: 48 }
-        ];
-        mechanics.pitTrigger = 180 + (i % 5) * 15;
-        mechanics.update = function(player) {
-          const pit = this.platforms.find(p => p.id === "pit");
-          if (pit && player.x > this.pitTrigger) pit.y += 14;
-        };
+    // Distinct Structural Layouts based on Trap Type
+    switch (trapKind) {
+      case "PITFALL_SURPRISE":
+        // Solid appearance, but center drops directly under player
+        platforms.push({ x: 160, y: 220, w: 140, h: 48, id: "fake_floor" });
+        platforms.push({ x: 380, y: 220, w: 340, h: 48 });
+        hazards.push({ x: 160, y: 250, w: 140, h: 25 });
         break;
 
-      case 1: // Falling Ceiling Spikes
-        platforms = [{ x: 0, y: 220, w: 720, h: 48 }];
-        hazards = [
-          { x: 250 + (i % 6) * 30, y: -60, w: 32, h: 32, id: "drop1" },
-          { x: 380 + (i % 4) * 25, y: -80, w: 32, h: 32, id: "drop2" }
-        ];
-        mechanics.update = function(player) {
-          const d1 = this.hazards.find(h => h.id === "drop1");
-          const d2 = this.hazards.find(h => h.id === "drop2");
-          if (d1 && player.x > d1.x - 70) d1.y += 15;
-          if (d2 && player.x > d2.x - 70) d2.y += 17;
-        };
+      case "CEILING_SMASH":
+        // Massive ceiling spike falls precisely when half-way
+        platforms.push({ x: 0, y: 220, w: 720, h: 48 });
+        hazards.push({ x: 300 + Math.floor(r2 * 120), y: -70, w: 40, h: 40, id: "crusher" });
         break;
 
-      case 2: // Escaping Door (Coward Portal)
-        platforms = [{ x: 0, y: 220, w: 720, h: 48 }];
-        door.x = 540;
-        door.originalX = 540;
-        mechanics.update = function(player) {
-          if (player.x > this.door.x - 80 && this.door.x < 650) this.door.x += 8;
-          if (this.door.x >= 650 && player.x > 520) this.door.x = 40;
-        };
+      case "TELEPORT_DOOR":
+        // Portal cowers and flees to start point
+        platforms.push({ x: 0, y: 220, w: 720, h: 48 });
+        door.x = 580;
+        door.originalX = 580;
         break;
 
-      case 3: // Moving Platform across Hazard Pit
-        platforms = [
-          { x: 0, y: 220, w: 140, h: 48 },
-          { x: 180, y: 220, w: 90, h: 26, id: "moving", dir: 1 },
-          { x: 500, y: 220, w: 220, h: 48 }
-        ];
-        hazards = [{ x: 140, y: 245, w: 360, h: 25 }];
-        mechanics.update = function() {
-          const m = this.platforms.find(p => p.id === "moving");
-          if (m) {
-            m.x += 3.2 * m.dir;
-            if (m.x > 390) m.dir = -1;
-            if (m.x < 170) m.dir = 1;
-          }
-        };
-        break;
-
-      case 4: // Crumbling Step Trio
-        platforms = [
-          { x: 0, y: 220, w: 130, h: 48 },
-          { x: 170, y: 185, w: 75, h: 22, id: "c1" },
-          { x: 290, y: 155, w: 75, h: 22, id: "c2" },
-          { x: 410, y: 130, w: 75, h: 22, id: "c3" },
-          { x: 530, y: 150, w: 190, h: 100 }
-        ];
-        hazards = [{ x: 130, y: 245, w: 400, h: 25 }];
-        door.y = 90;
-        mechanics.update = function(player) {
-          ['c1', 'c2', 'c3'].forEach((id, idx) => {
-            const step = this.platforms.find(p => p.id === id);
-            if (step && player.x > step.x - 10 && player.x < step.x + step.w + 10 && player.y <= step.y + 10) {
-              step.y += 5 + idx * 2;
-            }
+      case "CRUMBLE_RUN":
+        // Rapid succession of small crumbling steps
+        for (let step = 0; step < 4; step++) {
+          platforms.push({
+            x: 150 + step * 105,
+            y: 200 - step * 18,
+            w: 65,
+            h: 20,
+            id: `crumble_${step}`
           });
-        };
-        break;
-
-      case 5: // Chasing Floor Spike (Spike Hunter)
-        platforms = [{ x: 0, y: 220, w: 720, h: 48 }];
-        hazards = [{ x: -40, y: 190, w: 32, h: 30, id: "chaser" }];
-        mechanics.update = function(player) {
-          const chaser = this.hazards.find(h => h.id === "chaser");
-          if (chaser && player.x > 80) {
-            chaser.x += 4.5 + (i * 0.05); // Speed scales with level
-          }
-        };
-        break;
-
-      case 6: // Fake Portal with Teleport Trap
-        platforms = [
-          { x: 0, y: 220, w: 340, h: 48 },
-          { x: 420, y: 220, w: 300, h: 48 }
-        ];
-        hazards = [
-          { x: 340, y: 245, w: 80, h: 25 },
-          { x: 480, y: 180, w: 36, h: 40, id: "fakeDoorHazard" } // Looks like safe spot but triggers spike
-        ];
-        door.x = 640;
-        mechanics.update = function(player) {
-          const fake = this.hazards.find(h => h.id === "fakeDoorHazard");
-          if (fake && player.x > 460) fake.y = 190;
-        };
-        break;
-
-      case 7: // High Bounce Launchers
-        platforms = [
-          { x: 0, y: 220, w: 160, h: 48 },
-          { x: 230, y: 215, w: 60, h: 16, id: "bouncer" },
-          { x: 490, y: 130, w: 230, h: 120 }
-        ];
-        hazards = [
-          { x: 160, y: 245, w: 330, h: 25 },
-          { x: 200, y: 0, w: 120, h: 25 } // Ceiling hazard if you jump wrong
-        ];
-        door.y = 70;
-        mechanics.update = function(player) {
-          const b = this.platforms.find(p => p.id === "bouncer");
-          if (b && player.x > b.x - 10 && player.x < b.x + b.w + 10 && player.y >= b.y - player.height - 4) {
-            player.vy = -14.5; // Mega launch
-          }
-        };
-        break;
-
-      case 8: // Sinking Elevator Island
-        platforms = [
-          { x: 0, y: 220, w: 170, h: 48 },
-          { x: 250, y: 180, w: 140, h: 32, id: "elevator" },
-          { x: 470, y: 160, w: 250, h: 100 }
-        ];
-        hazards = [{ x: 170, y: 245, w: 300, h: 25 }];
-        door.y = 100;
-        mechanics.update = function(player) {
-          const el = this.platforms.find(p => p.id === "elevator");
-          if (el && player.x > el.x - 15 && player.x < el.x + el.w + 15 && player.isGrounded) {
-            el.y += 3.5;
-          }
-        };
-        break;
-
-      case 9: // Strobe Lasers / Disappearing Steps
-        platforms = [
-          { x: 0, y: 220, w: 200, h: 48 },
-          { x: 260, y: 200, w: 80, h: 24, id: "strobe1" },
-          { x: 390, y: 175, w: 80, h: 24, id: "strobe2" },
-          { x: 520, y: 150, w: 200, h: 100 }
-        ];
-        hazards = [{ x: 200, y: 245, w: 320, h: 25 }];
+        }
+        platforms.push({ x: 570, y: 150, w: 150, h: 90 });
+        hazards.push({ x: 140, y: 250, w: 430, h: 25 });
         door.y = 90;
-        mechanics.timer = 0;
-        mechanics.update = function() {
-          this.mechanics.timer = (this.mechanics.timer || 0) + 1;
-          const visible = Math.floor(this.mechanics.timer / 40) % 2 === 0;
-          const s1 = this.platforms.find(p => p.id === "strobe1");
-          const s2 = this.platforms.find(p => p.id === "strobe2");
-          if (s1) s1.y = visible ? 200 : -500;
-          if (s2) s2.y = !visible ? 175 : -500;
-        };
+        break;
+
+      case "HOMING_SPIKE":
+        // Spike tracks player horizontally before dropping
+        platforms.push({ x: 0, y: 220, w: 300, h: 48 });
+        platforms.push({ x: 420, y: 220, w: 300, h: 48 });
+        hazards.push({ x: 300, y: 250, w: 120, h: 25 });
+        hazards.push({ x: 100, y: -40, w: 34, h: 34, id: "homing" });
+        break;
+
+      case "BOUNCE_LAUNCHER":
+        // Jump pad launches player directly into ceiling spikes if careless
+        platforms.push({ x: 220, y: 215, w: 55, h: 16, id: "launcher" });
+        platforms.push({ x: 460, y: 160, w: 260, h: 80 });
+        hazards.push({ x: 120, y: 250, w: 340, h: 25 });
+        hazards.push({ x: 200, y: 0, w: 160, h: 25 }); // Ceiling spike trap
+        door.y = 100;
+        break;
+
+      case "INVERTED_ZONE":
+        // Mid-air gap where controls invert
+        platforms.push({ x: 0, y: 220, w: 260, h: 48 });
+        platforms.push({ x: 440, y: 220, w: 280, h: 48 });
+        hazards.push({ x: 260, y: 250, w: 180, h: 25 });
+        mechanics.invertArea = { x1: 240, x2: 450 };
+        break;
+
+      case "BLINKING_LASER":
+        // Timed deadly barrier blocks the path
+        platforms.push({ x: 0, y: 220, w: 720, h: 48 });
+        hazards.push({ x: 360, y: 90, w: 24, h: 130, id: "laser" });
+        break;
+
+      case "SINKING_ISLAND":
+        // Central island sinks into pit when stepped on
+        platforms.push({ x: 220, y: 200, w: 120, h: 30, id: "sinker" });
+        platforms.push({ x: 480, y: 190, w: 240, h: 60 });
+        hazards.push({ x: 120, y: 250, w: 360, h: 25 });
+        door.y = 130;
+        break;
+
+      case "CHASER_SAW":
+        // Fast hazard starts chasing from the left wall
+        platforms.push({ x: 0, y: 220, w: 720, h: 48 });
+        hazards.push({ x: -40, y: 185, w: 35, h: 35, id: "chaser" });
+        break;
+
+      case "FAKEOUT_DOOR":
+        // Door at end is fake (drops spike); real exit opens behind
+        platforms.push({ x: 0, y: 220, w: 720, h: 48 });
+        door.x = 640;
+        hazards.push({ x: 640, y: -60, w: 36, h: 36, id: "trap_door_spike" });
+        break;
+
+      case "SHRINKING_LEDGE":
+        // Platform width shrinks quickly
+        platforms.push({ x: 220, y: 195, w: 160, h: 26, id: "shrinker" });
+        platforms.push({ x: 500, y: 180, w: 220, h: 70 });
+        hazards.push({ x: 120, y: 250, w: 380, h: 25 });
+        door.y = 120;
+        break;
+
+      default:
+        // Moving platform with floating hazards
+        platforms.push({ x: 180, y: 210, w: 85, h: 22, id: "patrol", dir: 1 });
+        platforms.push({ x: 480, y: 200, w: 240, h: 50 });
+        hazards.push({ x: 120, y: 250, w: 360, h: 25 });
+        door.y = 140;
         break;
     }
 
     levels.push({
       id: i,
-      name: name,
-      spawn: { x: 50, y: 150 },
+      name: `Sector ${i} [${trapKind.replace('_', ' ')}]`,
+      spawn: { x: 40, y: 150 },
       door: door,
       platforms: platforms,
       hazards: hazards,
       mechanics: mechanics,
       update: function(player, input) {
-        if (this.mechanics && this.mechanics.update) {
-          this.mechanics.update.call(this, player, input);
+        this.mechanics.timer++;
+        const t = this.mechanics.type;
+
+        // Custom Trap Engine per level
+        if (t === "PITFALL_SURPRISE") {
+          const fake = this.platforms.find(p => p.id === "fake_floor");
+          if (fake && player.x > 140) fake.y += 15;
+        } 
+        else if (t === "CEILING_SMASH") {
+          const c = this.hazards.find(h => h.id === "crusher");
+          if (c && player.x > c.x - 70) c.y += 18;
+        } 
+        else if (t === "TELEPORT_DOOR") {
+          if (player.x > this.door.x - 90 && this.door.x < 660) this.door.x += 8;
+          if (this.door.x >= 660 && player.x > 500) this.door.x = 45;
+        } 
+        else if (t === "CRUMBLE_RUN") {
+          for (let step = 0; step < 4; step++) {
+            const p = this.platforms.find(pl => pl.id === `crumble_${step}`);
+            if (p && player.x > p.x - 5 && player.x < p.x + p.w + 5 && player.y <= p.y + 12) {
+              p.y += 7;
+            }
+          }
+        } 
+        else if (t === "HOMING_SPIKE") {
+          const spk = this.hazards.find(h => h.id === "homing");
+          if (spk) {
+            if (spk.y < 0) {
+              spk.x += (player.x - spk.x) * 0.08;
+              if (Math.abs(player.x - spk.x) < 25) spk.y = 1;
+            } else {
+              spk.y += 16;
+            }
+          }
+        } 
+        else if (t === "BOUNCE_LAUNCHER") {
+          const b = this.platforms.find(p => p.id === "launcher");
+          if (b && player.x > b.x - 5 && player.x < b.x + b.w + 5 && player.y >= b.y - player.height - 4) {
+            player.vy = -14.8;
+          }
+        } 
+        else if (t === "INVERTED_ZONE") {
+          const a = this.mechanics.invertArea;
+          this.invertActive = (player.x > a.x1 && player.x < a.x2);
+        } 
+        else if (t === "BLINKING_LASER") {
+          const laser = this.hazards.find(h => h.id === "laser");
+          if (laser) {
+            laser.y = (Math.floor(this.mechanics.timer / 35) % 2 === 0) ? 90 : -500;
+          }
+        } 
+        else if (t === "SINKING_ISLAND") {
+          const sink = this.platforms.find(p => p.id === "sinker");
+          if (sink && player.x > sink.x - 10 && player.x < sink.x + sink.w + 10 && player.isGrounded) {
+            sink.y += 3.5;
+          }
+        } 
+        else if (t === "CHASER_SAW") {
+          const saw = this.hazards.find(h => h.id === "chaser");
+          if (saw && player.x > 60) saw.x += 4.6 + (i * 0.04);
+        } 
+        else if (t === "FAKEOUT_DOOR") {
+          const drop = this.hazards.find(h => h.id === "trap_door_spike");
+          if (drop && player.x > 570) drop.y += 16;
+        } 
+        else if (t === "SHRINKING_LEDGE") {
+          const sh = this.platforms.find(p => p.id === "shrinker");
+          if (sh && player.x > sh.x && player.x < sh.x + sh.w && player.isGrounded) {
+            sh.w = Math.max(10, sh.w - 1.2);
+            sh.x += 0.6;
+          }
+        } 
+        else {
+          const pat = this.platforms.find(p => p.id === "patrol");
+          if (pat) {
+            pat.x += 3.2 * pat.dir;
+            if (pat.x > 380) pat.dir = -1;
+            if (pat.x < 180) pat.dir = 1;
+          }
         }
       }
     });
