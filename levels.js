@@ -141,7 +141,7 @@ const levels = [
     }
   },
 
-  // Level 7: Sarakti Zameen (Floor scrolls left into void)
+   // Level 7: Sarakti Zameen (Floor scrolls left into void)
   {
     id: 7,
     name: "Sarakti Zameen",
@@ -155,13 +155,14 @@ const levels = [
     ],
     update: function(player) {
       const fl = this.platforms.find(p => p.id === "movingFloor7");
+      // Drag speed ko 1.5 kiya taaki running speed (approx 3.0+) se overpower na ho
       if (fl && player.x > 80) {
-        player.x -= 2.6; // High conveyor force pushing player off-screen
-        fl.x -= 2.6;
+        player.x -= 1.5;
+        fl.x -= 1.5;
       }
     }
   },
-
+  
   // Level 8: Dushman Ya Dost (Cute bug enlarges and crushes screen)
   {
     id: 8,
