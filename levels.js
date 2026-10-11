@@ -529,7 +529,6 @@ const levels = [
       }
     }
   },
-
   // Level 24: Fake Loading Screen (Blind navigation corridor)
   {
     id: 24,
@@ -537,16 +536,23 @@ const levels = [
     spawn: { x: 40, y: 150 },
     door: { x: 640, y: 160, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 240, h: 48 },
-      { x: 300, y: 200, w: 100, h: 20, id: "blindPlat" },
-      { x: 480, y: 220, w: 240, h: 48 },
-      // Fake black loading overlay block
-      { x: 200, y: 0, w: 320, h: 340, id: "loadingBlind" }
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 260, y: 200, w: 140, h: 20, id: "blindPlat" },
+      { x: 460, y: 220, w: 260, h: 48 },
+      // Shuru me off-screen (y: -400), player aate hi screen par aayega
+      { x: 200, y: -400, w: 280, h: 340, id: "loadingBlind" }
     ],
-    hazards: [ { x: 240, y: 255, w: 240, h: 20 } ],
-    update: function() {}
+    hazards: [ { x: 200, y: 255, w: 260, h: 20 } ],
+    update: function(player) {
+      const blind = this.platforms.find(p => p.id === "loadingBlind");
+      // Player pehla step lega tab fake loading shutter drop hoga
+      if (blind && player.x > 180 && blind.y < 0) {
+        blind.y = 0;
+      }
+    }
   },
-
+  
+  
   // Level 25: Low Battery Alert (Sudden panic lurch forward into spikes)
   {
     id: 25,
