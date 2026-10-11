@@ -529,29 +529,39 @@ const levels = [
       }
     }
   },
-  // Level 24: Fake Loading Screen (Blind navigation corridor)
+  // Level 24: Fake Loading Screen (Loading bar block + sinking floor troll)
   {
     id: 24,
     name: "Fake Loading Screen",
     spawn: { x: 40, y: 150 },
     door: { x: 640, y: 160, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 200, h: 48 },
-      { x: 260, y: 200, w: 140, h: 20, id: "blindPlat" },
-      { x: 460, y: 220, w: 260, h: 48 },
-      // Shuru me off-screen (y: -400), player aate hi screen par aayega
-      { x: 200, y: -400, w: 280, h: 340, id: "loadingBlind" }
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 240, y: 200, w: 140, h: 20, id: "sinkStep24" }, // Pair padte hi dissolve hoga
+      { x: 480, y: 220, w: 240, h: 48 },
+      // Fake loading obstacle bar
+      { x: 380, y: -200, w: 50, h: 180, id: "loadingBar24" }
     ],
-    hazards: [ { x: 200, y: 255, w: 260, h: 20 } ],
+    hazards: [ { x: 180, y: 255, w: 300, h: 20 } ],
+    loadingTimer: 0,
     update: function(player) {
-      const blind = this.platforms.find(p => p.id === "loadingBlind");
-      // Player pehla step lega tab fake loading shutter drop hoga
-      if (blind && player.x > 180 && blind.y < 0) {
-        blind.y = 0;
+      const bar = this.platforms.find(p => p.id === "loadingBar24");
+      const step = this.platforms.find(p => p.id === "sinkStep24");
+
+      // Player aage badhte hi loading bar samne tapak padti hai
+      if (bar && player.x > 200 && bar.y < 40) {
+        bar.y = 40;
+      }
+
+      // Agar player island par ruk ke wait karega, toh zameen chasm me dubegi
+      if (player.x > 230 && player.x < 370) {
+        this.loadingTimer = (this.loadingTimer || 0) + 1;
+        if (this.loadingTimer > 35 && step && step.y < 350) {
+          step.y += 4; // Floor collapses!
+        }
       }
     }
   },
-  
   
   // Level 25: Low Battery Alert (Sudden panic lurch forward into spikes)
   {
