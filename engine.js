@@ -31,8 +31,9 @@ canvas.width = GAME_W;
 canvas.height = GAME_H;
 
 function resizeCanvas() {
-  const availW = container.clientWidth;
-  const availH = container.clientHeight;
+  if (!container) return;
+  const availW = container.clientWidth || window.innerWidth;
+  const availH = container.clientHeight || window.innerHeight;
   const scale = Math.min(availW / GAME_W, availH / GAME_H);
 
   canvas.style.width = `${Math.floor(GAME_W * scale)}px`;
@@ -41,6 +42,15 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 150));
 resizeCanvas();
+
+// Safe helper to get the levels catalog
+function getLevelsList() {
+  if (typeof levels !== 'undefined' && Array.isArray(levels)) return levels;
+  if (typeof LEVELS !== 'undefined' && Array.isArray(LEVELS)) return LEVELS;
+  if (window.levels && Array.isArray(window.levels)) return window.levels;
+  if (window.LEVELS && Array.isArray(window.LEVELS)) return window.LEVELS;
+  return [];
+}
 
 // Save Progress
 let unlockedLevel = parseInt(localStorage.getItem('vortex_unlocked_lvl')) || 1;
@@ -59,8 +69,8 @@ const effectiveInput = { left: false, right: false, jump: false };
 function setupTouchButton(id, key) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.addEventListener('touchstart', (e) => { e.preventDefault(); rawInput[key] = true; });
-  el.addEventListener('touchend', (e) => { e.preventDefault(); rawInput[key] = false; });
+  el.addEventListener('touchstart', (e) => { e.preventDefault(); rawInput[key] = true; }, { passive: false });
+  el.addEventListener('touchend', (e) => { e.preventDefault(); rawInput[key] = false; }, { passive: false });
 }
 
 setupTouchButton('btn-left', 'left');
@@ -81,28 +91,33 @@ window.addEventListener('keyup', (e) => {
 });
 
 // Home Listeners
-btnStartGame.onclick = () => {
-  homeScreen.classList.add('hidden');
-  isLevelPaused = false;
-  resizeCanvas();
-  loadLevel(unlockedLevel - 1);
-};
+if (btnStartGame) {
+  btnStartGame.onclick = () => {
+    if (homeScreen) homeScreen.classList.add('hidden');
+    isLevelPaused = false;
+    resizeCanvas();
+    loadLevel(unlockedLevel - 1);
+  };
+}
 
-btnHomeLevels.onclick = () => openLevelSelector();
+if (btnHomeLevels) btnHomeLevels.onclick = () => openLevelSelector();
 
-btnHome.onclick = () => {
-  isLevelPaused = true;
-  homeScreen.classList.remove('hidden');
-  levelSelectModal.classList.add('hidden');
-  modalOverlay.classList.add('hidden');
-};
+if (btnHome) {
+  btnHome.onclick = () => {
+    isLevelPaused = true;
+    if (homeScreen) homeScreen.classList.remove('hidden');
+    if (levelSelectModal) levelSelectModal.classList.add('hidden');
+    if (modalOverlay) modalOverlay.classList.add('hidden');
+  };
+}
 
-btnMenu.onclick = () => openLevelSelector();
-btnCloseMenu.onclick = () => levelSelectModal.classList.add('hidden');
-btnRestart.onclick = () => loadLevel(currentLevelIdx);
-btnReplayLevel.onclick = () => loadLevel(currentLevelIdx);
+if (btnMenu) btnMenu.onclick = () => openLevelSelector();
+if (btnCloseMenu) btnCloseMenu.onclick = () => levelSelectModal.classList.add('hidden');
+if (btnRestart) btnRestart.onclick = () => loadLevel(currentLevelIdx);
+if (btnReplayLevel) btnReplayLevel.onclick = () => loadLevel(currentLevelIdx);
 
 function renderLevelGrid() {
+  if (!levelGrid) return;
   levelGrid.innerHTML = '';
   for (let i = 1; i <= 100; i++) {
     const node = document.createElement('div');
@@ -114,14 +129,14 @@ function renderLevelGrid() {
       node.onclick = () => { 
         loadLevel(i - 1); 
         levelSelectModal.classList.add('hidden'); 
-        homeScreen.classList.add('hidden'); 
+        if (homeScreen) homeScreen.classList.add('hidden'); 
       };
     } else if (i === unlockedLevel) {
       node.classList.add('unlocked');
       node.onclick = () => { 
         loadLevel(i - 1); 
         levelSelectModal.classList.add('hidden'); 
-        homeScreen.classList.add('hidden'); 
+        if (homeScreen) homeScreen.classList.add('hidden'); 
       };
     }
 
@@ -135,61 +150,77 @@ function renderLevelGrid() {
 
 function openLevelSelector() {
   renderLevelGrid();
-  levelSelectModal.classList.remove('hidden');
+  if (levelSelectModal) levelSelectModal.classList.remove('hidden');
 }
 
 function loadLevel(idx) {
+  const allLevels = getLevelsList();
   currentLevelIdx = idx;
   levelDeaths = 0;
   isLevelPaused = false;
-  modalOverlay.classList.add('hidden');
+  if (modalOverlay) modalOverlay.classList.add('hidden');
 
-  const template = LEVELS[currentLevelIdx];
+  const template = allLevels[currentLevelIdx];
+  if (!template) return;
+
   activeLevel = {
     ...template,
-    door: { ...template.door },
-    platforms: template.platforms.map(p => ({ ...p })),
-    hazards: template.hazards.map(h => ({ ...h }))
+    door: template.door ? { ...template.door } : { x: 640, y: 160, w: 36, h: 60 },
+    platforms: (template.platforms || []).map(p => ({ ...p })),
+    hazards: (template.hazards || []).map(h => ({ ...h }))
   };
 
-  levelTitleEl.innerText = `Level ${activeLevel.id}: ${activeLevel.name}`;
-  player.reset(activeLevel.spawn.x, activeLevel.spawn.y);
+  if (levelTitleEl) {
+    levelTitleEl.innerText = `Level ${activeLevel.id}: ${activeLevel.name}`;
+  }
+  if (activeLevel.spawn && player.reset) {
+    player.reset(activeLevel.spawn.x, activeLevel.spawn.y);
+  }
 }
 
 function handleDeath() {
   totalDeaths++;
   levelDeaths++;
-  deathCounterEl.innerText = `Deaths: ${totalDeaths}`;
+  if (deathCounterEl) deathCounterEl.innerText = `Deaths: ${totalDeaths}`;
   loadLevel(currentLevelIdx);
 }
 
 function showLevelCompleteModal() {
+  const allLevels = getLevelsList();
   isLevelPaused = true;
-  modalTitle.innerText = `${activeLevel.name} Cleared!`;
-  modalStats.innerText = `Deaths: ${levelDeaths} | Total Deaths: ${totalDeaths}`;
+  if (modalTitle) modalTitle.innerText = `${activeLevel.name} Cleared!`;
+  if (modalStats) modalStats.innerText = `Deaths: ${levelDeaths} | Total Deaths: ${totalDeaths}`;
 
-  if (activeLevel.id >= unlockedLevel) {
+  if (activeLevel && activeLevel.id >= unlockedLevel) {
     unlockedLevel = activeLevel.id + 1;
     localStorage.setItem('vortex_unlocked_lvl', unlockedLevel);
   }
 
-  if (currentLevelIdx + 1 < LEVELS.length) {
-    btnNextLevel.innerText = "NEXT LEVEL ▶";
-    btnNextLevel.onclick = () => loadLevel(currentLevelIdx + 1);
-  } else {
-    btnNextLevel.innerText = "ALL 100 CLEARED! 👑";
-    btnNextLevel.onclick = () => openLevelSelector();
+  if (btnNextLevel) {
+    if (currentLevelIdx + 1 < allLevels.length) {
+      btnNextLevel.innerText = "NEXT LEVEL ▶";
+      btnNextLevel.onclick = () => loadLevel(currentLevelIdx + 1);
+    } else {
+      btnNextLevel.innerText = "ALL 100 CLEARED! 👑";
+      btnNextLevel.onclick = () => openLevelSelector();
+    }
   }
 
-  modalOverlay.classList.remove('hidden');
+  if (modalOverlay) modalOverlay.classList.remove('hidden');
 }
 
 function checkOverlap(r1, r2) {
+  if (!r1 || !r2) return false;
+  const w1 = r1.width || r1.w || 20;
+  const h1 = r1.height || r1.h || 20;
+  const w2 = r2.w || r2.width || 0;
+  const h2 = r2.h || r2.height || 0;
+
   return (
-    r1.x < r2.x + r2.w &&
-    r1.x + (r1.width || r1.w) > r2.x &&
-    r1.y < r2.y + r2.h &&
-    r1.y + (r1.height || r1.h) > r2.y
+    r1.x < r2.x + w2 &&
+    r1.x + w1 > r2.x &&
+    r1.y < r2.y + h2 &&
+    r1.y + h1 > r2.y
   );
 }
 
@@ -204,17 +235,25 @@ function gameLoop() {
     }
     effectiveInput.jump = rawInput.jump;
 
-    if (activeLevel.update) {
-      activeLevel.update(player, effectiveInput);
+    if (typeof activeLevel.update === 'function') {
+      try {
+        activeLevel.update(player, effectiveInput);
+      } catch (err) {
+        // Safe catch to prevent loop termination
+      }
     }
 
-    player.update(effectiveInput, activeLevel.platforms);
+    if (player.update) {
+      player.update(effectiveInput, activeLevel.platforms);
+    }
 
-    for (const h of activeLevel.hazards) {
-      if (checkOverlap(player, h)) {
-        handleDeath();
-        requestAnimationFrame(gameLoop);
-        return;
+    if (Array.isArray(activeLevel.hazards)) {
+      for (const h of activeLevel.hazards) {
+        if (checkOverlap(player, h)) {
+          handleDeath();
+          requestAnimationFrame(gameLoop);
+          return;
+        }
       }
     }
 
@@ -224,7 +263,7 @@ function gameLoop() {
       return;
     }
 
-    if (checkOverlap(player, activeLevel.door)) {
+    if (activeLevel.door && checkOverlap(player, activeLevel.door)) {
       showLevelCompleteModal();
     }
   }
@@ -233,7 +272,7 @@ function gameLoop() {
   ctx.fillStyle = '#0f0a1c';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Grid
+  // Background Grid
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
   ctx.lineWidth = 1;
   for (let x = 0; x < canvas.width; x += 36) {
@@ -244,39 +283,50 @@ function gameLoop() {
   }
 
   if (activeLevel) {
-    // Platforms (Bolder)
-    for (const p of activeLevel.platforms) {
-      ctx.fillStyle = '#1c1233';
-      ctx.fillRect(p.x, p.y, p.w, p.h);
-      ctx.fillStyle = '#a855f7';
-      ctx.fillRect(p.x, p.y, p.w, 5); // Thicker top edge
+    // Platforms
+    if (Array.isArray(activeLevel.platforms)) {
+      for (const p of activeLevel.platforms) {
+        if (!p.hidden) {
+          ctx.fillStyle = '#1c1233';
+          ctx.fillRect(p.x, p.y, p.w, p.h);
+          ctx.fillStyle = '#a855f7';
+          ctx.fillRect(p.x, p.y, p.w, 5);
+        }
+      }
     }
 
-    // Hazards (Bigger Spikes)
-    for (const h of activeLevel.hazards) {
-      ctx.fillStyle = '#ff0055';
-      ctx.beginPath();
-      ctx.moveTo(h.x, h.y + h.h);
-      ctx.lineTo(h.x + h.w / 2, h.y);
-      ctx.lineTo(h.x + h.w, h.y + h.h);
-      ctx.fill();
+    // Hazards
+    if (Array.isArray(activeLevel.hazards)) {
+      for (const h of activeLevel.hazards) {
+        ctx.fillStyle = '#ff0055';
+        ctx.beginPath();
+        ctx.moveTo(h.x, h.y + h.h);
+        ctx.lineTo(h.x + h.w / 2, h.y);
+        ctx.lineTo(h.x + h.w, h.y + h.h);
+        ctx.fill();
+      }
     }
 
-    // Door (Larger Portal)
-    const d = activeLevel.door;
-    ctx.fillStyle = '#00f0ff';
-    ctx.fillRect(d.x, d.y, d.w, d.h);
-    ctx.fillStyle = '#0f0a1c';
-    ctx.fillRect(d.x + 4, d.y + 4, d.w - 8, d.h - 8);
+    // Door
+    if (activeLevel.door) {
+      const d = activeLevel.door;
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillRect(d.x, d.y, d.w, d.h);
+      ctx.fillStyle = '#0f0a1c';
+      ctx.fillRect(d.x + 4, d.y + 4, d.w - 8, d.h - 8);
+    }
 
     // Player
-    player.draw(ctx);
+    if (player.draw) {
+      player.draw(ctx);
+    }
   }
 
   requestAnimationFrame(gameLoop);
 }
 
+// Initial Level Boot
 loadLevel(0);
 isLevelPaused = true;
 requestAnimationFrame(gameLoop);
-      
+
