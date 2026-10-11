@@ -1,2046 +1,2312 @@
 // ==========================================
-// VORTEX-360 FULL 100 HANDMADE TROLL LEVELS
+// VORTEX-360: BLUEPRINT EDITION (LEVELS 1 - 100)
+// WORLD 1: FAKE BASICS (LEVELS 1 - 10)
 // ==========================================
 
 const levels = [
-  // Level 1: Watch Your Step
+  // Level 1: Pehli Nazar Ka Dhoka (Floor collapse on first step)
   {
     id: 1,
-    name: "Watch Your Step",
+    name: "Pehli Nazar Ka Dhoka",
     spawn: { x: 40, y: 150 },
     door: { x: 640, y: 160, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 300, h: 48 },
-      { x: 400, y: 220, w: 320, h: 48 }
+      { x: 0, y: 220, w: 180, h: 48, id: "trapFloor1" },
+      { x: 280, y: 220, w: 140, h: 48 },
+      { x: 520, y: 220, w: 200, h: 48 }
     ],
-    hazards: [ { x: 300, y: 250, w: 100, h: 25 } ],
-    update: function(player) {}
-  },
-
-  // Level 2: Ceiling Bonk (Invisible troll block)
-  {
-    id: 2,
-    name: "Ceiling Bonk",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 220, h: 48 },
-      { x: 300, y: 110, w: 40, h: 20 },
-      { x: 440, y: 220, w: 280, h: 48 }
+    hazards: [
+      { x: 0, y: 310, w: 720, h: 30 } // Maut ka kuan
     ],
-    hazards: [ { x: 220, y: 255, w: 220, h: 20 } ],
-    update: function(player) {}
-  },
-
-  // Level 3: Crumbling Trust
-  {
-    id: 3,
-    name: "Crumbling Trust",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 120, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 190, y: 200, w: 80, h: 20, id: "trap3" },
-      { x: 330, y: 175, w: 80, h: 20 },
-      { x: 470, y: 160, w: 250, h: 60 }
-    ],
-    hazards: [ { x: 140, y: 255, w: 330, h: 20 } ],
     update: function(player) {
-      const p = this.platforms.find(x => x.id === "trap3");
-      if (p && player.x > p.x - 10 && player.x < p.x + p.w + 10) {
-        if (p.y < 260) p.y += 2.5;
+      const p = this.platforms.find(item => item.id === "trapFloor1");
+      // Player pehla kadam aage badhayega aur zameen sink
+      if (p && player.x > 70 && p.y < 350) {
+        p.y += 6;
       }
     }
   },
 
-  // Level 4: Leap of Faith
+  // Level 2: Havaai Hamla (Air drop block bonks player into pit)
   {
-    id: 4,
-    name: "Blind Faith",
-    spawn: { x: 40, y: 100 },
+    id: 2,
+    name: "Havaai Hamla",
+    spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 180, w: 120, h: 48 },
-      { x: 230, y: 215, w: 70, h: 20 },
-      { x: 410, y: 185, w: 70, h: 20 },
-      { x: 570, y: 215, w: 150, h: 50 }
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: -50, w: 50, h: 30, id: "airDropBlock" }, // Invisible block jo upar se girega
+      { x: 460, y: 220, w: 260, h: 48 }
     ],
-    hazards: [ { x: 120, y: 255, w: 450, h: 20 } ],
-    update: function(player) {}
+    hazards: [
+      { x: 180, y: 255, w: 280, h: 20 }
+    ],
+    update: function(player) {
+      const b = this.platforms.find(p => p.id === "airDropBlock");
+      // Mid air jump trigger
+      if (b && player.x > 210 && b.y < 130) {
+        b.y += 18;
+      }
+    }
   },
 
-  // Level 5: Running Door (Troll run-away)
+  // Level 3: Reverse Gravity Fakeout (Fake flip, ultra heavy drop)
   {
-    id: 5,
-    name: "Running Door",
+    id: 3,
+    name: "Reverse Gravity Fakeout",
     spawn: { x: 40, y: 150 },
-    door: { x: 380, y: 160, w: 36, h: 60 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 320, y: 220, w: 120, h: 48 },
+      { x: 540, y: 220, w: 180, h: 48 }
+    ],
+    hazards: [
+      { x: 200, y: 255, w: 120, h: 20 },
+      { x: 440, y: 255, w: 100, h: 20 }
+    ],
+    update: function(player, input) {
+      // Jump dabane par gravity ulta hone ke bajay player smash ho jata hai
+      if (input && input.jump && player.x > 180 && player.x < 320) {
+        player.vy += 2.5; // Fast downward force
+      }
+    }
+  },
+
+  // Level 4: Chalta Firta Spike (Spike charges toward landing spot)
+  {
+    id: 4,
+    name: "Chalta Firta Spike",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 720, h: 48 }
     ],
+    hazards: [
+      { x: 380, y: 190, w: 35, h: 30, id: "chargingSpike" }
+    ],
+    update: function(player) {
+      const s = this.hazards.find(h => h.id === "chargingSpike");
+      // Player jump lete hi spike left bhagega uski landing block karne
+      if (s && player.y < 200 && player.x > 160 && s.x > 220) {
+        s.x -= 4.2;
+      }
+    }
+  },
+
+  // Level 5: Fake Checkpoint (Checkpoint blasts and removes floor)
+  {
+    id: 5,
+    name: "Fake Checkpoint",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 260, h: 48 },
+      { x: 260, y: 220, w: 140, h: 48, id: "flagFloor" },
+      { x: 400, y: 220, w: 320, h: 48 }
+    ],
+    hazards: [
+      { x: 320, y: 180, w: 20, h: 40, id: "fakeFlag" } // Looks like flag, acts as proximity bomb
+    ],
+    update: function(player) {
+      const fl = this.hazards.find(h => h.id === "fakeFlag");
+      const floor = this.platforms.find(p => p.id === "flagFloor");
+      if (fl && floor && player.x > 270 && player.x < 360) {
+        floor.y += 12; // Zameen blast hoke gayab
+        fl.w = 50; // Explosion area grows
+      }
+    }
+  },
+
+  // Level 6: Safe Zone Trap (Spring board catapults into ceiling spikes)
+  {
+    id: 6,
+    name: "Safe Zone Trap",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 280, y: 220, w: 60, h: 20, id: "springFloor" }, // Looks like safe rest spot
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [
+      { x: 140, y: 255, w: 340, h: 20 }, // Ground spikes
+      { x: 250, y: 20, w: 120, h: 30 }   // Ceiling spikes
+    ],
+    update: function(player) {
+      const pad = this.platforms.find(p => p.id === "springFloor");
+      if (pad && player.x > pad.x - 5 && player.x < pad.x + pad.w + 5 && Math.abs(player.y - (pad.y - 20)) < 8) {
+        player.vy = -18; // Super launch seedha upar spikes me
+      }
+    }
+  },
+
+  // Level 7: Sarakti Zameen (Floor scrolls left into void)
+  {
+    id: 7,
+    name: "Sarakti Zameen",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48, id: "movingFloor7" }
+    ],
+    hazards: [
+      { x: -100, y: 220, w: 100, h: 48 } // Offscreen edge hazard
+    ],
+    update: function(player) {
+      const fl = this.platforms.find(p => p.id === "movingFloor7");
+      if (fl && player.x > 80) {
+        player.x -= 2.6; // High conveyor force pushing player off-screen
+        fl.x -= 2.6;
+      }
+    }
+  },
+
+  // Level 8: Dushman Ya Dost (Cute bug enlarges and crushes screen)
+  {
+    id: 8,
+    name: "Dushman Ya Dost",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 }
+    ],
+    hazards: [
+      { x: 420, y: 195, w: 24, h: 25, id: "cuteCreature" }
+    ],
+    update: function(player) {
+      const c = this.hazards.find(h => h.id === "cuteCreature");
+      // Player jaise hi jump karke attack karega, size gigantic ho jayega
+      if (c && player.x > 320) {
+        if (c.w < 180) {
+          c.w += 4;
+          c.h += 4;
+          c.y -= 4;
+          c.x -= 2;
+        }
+      }
+    }
+  },
+
+  // Level 9: Falling Ceiling (Ceiling crushes path, retreat to spawn bunker)
+  {
+    id: 9,
+    name: "Falling Ceiling",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      { x: 120, y: 40, w: 600, h: 40, id: "crushCeiling9" } // Heavy roof
+    ],
     hazards: [],
     update: function(player) {
-      if (player.x > 280 && this.door.x < 640) {
+      const roof = this.platforms.find(p => p.id === "crushCeiling9");
+      if (roof && player.x > 360 && roof.y < 165) {
+        roof.y += 3.2; // Fast drop near door
+      } else if (roof && player.x < 100 && roof.y > 40) {
+        roof.y -= 1.5; // Resets only if player runs back to spawn!
+      }
+    }
+  },
+
+  // Level 10: Bhul Bhulaiya Door (2 fake teleports, 1 true exit)
+  {
+    id: 10,
+    name: "Bhul Bhulaiya Door",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 }, // Real broken door
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 }
+    ],
+    hazards: [
+      { x: 260, y: 160, w: 36, h: 60, id: "fakeDoor1" },
+      { x: 450, y: 160, w: 36, h: 60, id: "fakeDoor2" }
+    ],
+    update: function(player) {
+      // Fake doors are lethal traps
+    }
+  },
+          // Level 11: Jump Timer (Continuous timer tick, falling hazard on failure)
+  {
+    id: 11,
+    name: "Jump Timer",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 300, y: -40, w: 30, h: 30, id: "timerRock" }
+    ],
+    timerTicks: 0,
+    update: function(player, input) {
+      this.timerTicks = (this.timerTicks || 0) + 1;
+      const rock = this.hazards.find(h => h.id === "timerRock");
+      // Agar 180 frames (~3 sec) tak player jump nahi kare toh boulder crash
+      if (input && input.jump) {
+        this.timerTicks = 0;
+      }
+      if (this.timerTicks > 180 && rock && rock.y < 200) {
+        rock.y += 12;
+      }
+    }
+  },
+
+  // Level 12: Elastic Platform (Rubber stretch sink into floor spikes)
+  {
+    id: 12,
+    name: "Elastic Platform",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 160, h: 48 },
+      { x: 260, y: 220, w: 120, h: 20, id: "rubberPlat" },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [
+      { x: 160, y: 265, w: 320, h: 20 }
+    ],
+    update: function(player) {
+      const rp = this.platforms.find(p => p.id === "rubberPlat");
+      if (rp && player.x > rp.x && player.x < rp.x + rp.w && rp.y < 265) {
+        rp.y += 2.8; // Rubber stretch downward into spikes
+      }
+    }
+  },
+
+  // Level 13: Flashlight Nightmare (Vanishing dynamic safe path)
+  {
+    id: 13,
+    name: "Flashlight Nightmare",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 220, w: 90, h: 20, id: "nightStep1" },
+      { x: 380, y: 220, w: 90, h: 20, id: "nightStep2" },
+      { x: 540, y: 220, w: 180, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 260, w: 400, h: 20 } ],
+    update: function(player) {
+      const s1 = this.platforms.find(p => p.id === "nightStep1");
+      const s2 = this.platforms.find(p => p.id === "nightStep2");
+      // Step tabhi reveal honge jab player extreme close range me ho
+      if (s1) s1.hidden = (player.x < 150 || player.x > 320);
+      if (s2) s2.hidden = (player.x < 310 || player.x > 480);
+    }
+  },
+
+  // Level 14: Weight Trap (Pressure plate triggers roof boulder)
+  {
+    id: 14,
+    name: "Weight Trap",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 }
+    ],
+    hazards: [
+      { x: 420, y: -50, w: 50, h: 50, id: "boulder14" }
+    ],
+    update: function(player) {
+      const b = this.hazards.find(h => h.id === "boulder14");
+      // Pressure step aate hi boulder fast speed se head par smash hota hai
+      if (b && player.x > 360 && b.y < 175) {
+        b.y += 15;
+      }
+    }
+  },
+
+  // Level 15: Teleport Pit (Pit warps to roof, high leap blocked by wall)
+  {
+    id: 15,
+    name: "Teleport Pit",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 80, w: 40, h: 100, id: "invisWall" }, // Invisible wall blocking high jump
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [],
+    update: function(player) {
+      // Pit me girne par player safely ceiling se right side drop hoga
+      if (player.y > 280 && player.x > 180 && player.x < 440) {
+        player.x = 500;
+        player.y = 60;
+        player.vy = 0;
+      }
+    }
+  },
+
+  // Level 16: Slippery Slope (Sudden oil acceleration off-screen)
+  {
+    id: 16,
+    name: "Slippery Slope",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 200, y: 220, w: 260, h: 48, id: "oilSlope" },
+      { x: 540, y: 220, w: 180, h: 48 }
+    ],
+    hazards: [
+      { x: 460, y: 255, w: 80, h: 20 }
+    ],
+    update: function(player) {
+      // Oil section me ghuste hi extreme forward launch
+      if (player.x > 200 && player.x < 460) {
+        player.x += 4.5;
+      }
+    }
+  },
+
+  // Level 17: Ghost Blocks (Visible blocks fall, invisible blocks solid)
+  {
+    id: 17,
+    name: "Ghost Blocks",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 200, w: 80, h: 20, id: "gb1" },
+      { x: 380, y: 200, w: 80, h: 20, id: "gb2" },
+      { x: 520, y: 220, w: 200, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 255, w: 380, h: 20 } ],
+    gTick: 0,
+    update: function() {
+      this.gTick = (this.gTick || 0) + 1;
+      const b1 = this.platforms.find(p => p.id === "gb1");
+      const b2 = this.platforms.find(p => p.id === "gb2");
+      // Platforms blink cycle
+      const phase = Math.floor(this.gTick / 40) % 2;
+      if (b1) b1.hidden = (phase === 0);
+      if (b2) b2.hidden = (phase !== 0);
+    }
+  },
+
+  // Level 18: Speedrunner's Doom (Chasing lethal wall from spawn)
+  {
+    id: 18,
+    name: "Speedrunner's Doom",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: -80, y: 0, w: 50, h: 260, id: "chaseWall" }
+    ],
+    update: function() {
+      const wall = this.hazards.find(h => h.id === "chaseWall");
+      if (wall) {
+        wall.x += 1.8; // Lagatar peeche se crush karti hui wall
+      }
+    }
+  },
+
+  // Level 19: Fragile Bridge (Alternate tiles vanish at midpoint)
+  {
+    id: 19,
+    name: "Fragile Bridge",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 120, h: 48 },
+      { x: 150, y: 220, w: 60, h: 48, id: "alt1" },
+      { x: 240, y: 220, w: 60, h: 48, id: "alt2" },
+      { x: 330, y: 220, w: 60, h: 48, id: "alt3" },
+      { x: 420, y: 220, w: 60, h: 48, id: "alt4" },
+      { x: 510, y: 220, w: 210, h: 48 }
+    ],
+    hazards: [ { x: 120, y: 265, w: 390, h: 20 } ],
+    update: function(player) {
+      const a1 = this.platforms.find(p => p.id === "alt1");
+      const a3 = this.platforms.find(p => p.id === "alt3");
+      // Player center me aate hi alternate blocks drop
+      if (player.x > 260) {
+        if (a1 && a1.y < 350) a1.y += 10;
+        if (a3 && a3.y < 350) a3.y += 10;
+      }
+    }
+  },
+
+  // Level 20: Boss Fake Out (Monster morphs into exit door, fireballs freeze)
+  {
+    id: 20,
+    name: "Boss Fake Out",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60, id: "bossDoor" },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 480, y: 170, w: 50, h: 50, id: "bossEntity" },
+      { x: 300, y: 185, w: 25, h: 25, id: "frozenFireball" }
+    ],
+    update: function(player) {
+      const boss = this.hazards.find(h => h.id === "bossEntity");
+      // Player attack range me aate hi boss door me convert
+      if (boss && player.x > 380) {
+        boss.y = -600; // Monster vanishes
+        this.door.x = 500;
+        this.door.y = 160;
+      }
+    }
+  },
+    // ==========================================
+  // WORLD 2: UI & INPUT BETRAYALS (LEVELS 21 - 30)
+  // ==========================================
+
+  // Level 21: Ulte Haath Ka Khel (Inverted controls + quick fall)
+  {
+    id: 21,
+    name: "Ulte Haath Ka Khel",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 280, y: 200, w: 140, h: 20 },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [ { x: 200, y: 255, w: 300, h: 20 } ],
+    invertActive: true,
+    update: function(player, input) {
+      this.invertActive = true;
+      // Jump hold karne par fast downward landing
+      if (input && input.jump && player.vy > 0) {
+        player.vy += 1.8;
+      }
+    }
+  },
+
+  // Level 22: Lag Simulator (Artificial frame freeze vs moving hazard)
+  {
+    id: 22,
+    name: "Lag Simulator",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 740, y: 185, w: 30, h: 35, id: "lagSpike22" }
+    ],
+    lagTicks: 0,
+    update: function(player) {
+      this.lagTicks = (this.lagTicks || 0) + 1;
+      const s = this.hazards.find(h => h.id === "lagSpike22");
+      if (s) {
+        s.x -= 3.5;
+        if (s.x < -30) s.x = 740;
+      }
+      // Har 120 frames (~2 sec) par player ka movement momentarily zero lock
+      if (this.lagTicks % 120 > 95) {
+        player.vx = 0;
+      }
+    }
+  },
+
+  // Level 23: Paused But Dead (Stillness triggers moving floor traps)
+  {
+    id: 23,
+    name: "Paused But Dead",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 220, h: 48 },
+      { x: 300, y: 220, w: 120, h: 48, id: "movePlat23" },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [ { x: 220, y: 255, w: 280, h: 20 } ],
+    update: function(player, input) {
+      const p = this.platforms.find(item => item.id === "movePlat23");
+      // Player ruka toh background traps use chasm me drop kar denge
+      if (input && !input.left && !input.right && p && p.y < 340) {
+        p.y += 1.5;
+      }
+    }
+  },
+
+  // Level 24: Fake Loading Screen (Blind navigation corridor)
+  {
+    id: 24,
+    name: "Fake Loading Screen",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 240, h: 48 },
+      { x: 300, y: 200, w: 100, h: 20, id: "blindPlat" },
+      { x: 480, y: 220, w: 240, h: 48 },
+      // Fake black loading overlay block
+      { x: 200, y: 0, w: 320, h: 340, id: "loadingBlind" }
+    ],
+    hazards: [ { x: 240, y: 255, w: 240, h: 20 } ],
+    update: function() {}
+  },
+
+  // Level 25: Low Battery Alert (Sudden panic lurch forward into spikes)
+  {
+    id: 25,
+    name: "Low Battery Alert",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 300, h: 48 },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 300, y: 255, w: 160, h: 20 } ],
+    update: function(player) {
+      // Screen ke 260x pe aate hi sudden fake popup push
+      if (player.x > 250 && player.x < 270) {
+        player.x += 45; // Direct spike pit me fling
+      }
+    }
+  },
+
+  // Level 26: Chatpatate Buttons (Deflection barrier repels player)
+  {
+    id: 26,
+    name: "Chatpatate Buttons",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 160, h: 48 },
+      { x: 240, y: 190, w: 80, h: 20, id: "chatPlat1" },
+      { x: 400, y: 170, w: 80, h: 20, id: "chatPlat2" },
+      { x: 540, y: 220, w: 180, h: 48 }
+    ],
+    hazards: [ { x: 160, y: 255, w: 380, h: 20 } ],
+    update: function(player) {
+      const cp1 = this.platforms.find(p => p.id === "chatPlat1");
+      const cp2 = this.platforms.find(p => p.id === "chatPlat2");
+      // Landing ke time platform apni coordinate jagah dodge karega
+      if (cp1 && player.x > 210 && player.x < 260) cp1.x = 290;
+      if (cp2 && player.x > 370 && player.x < 420) cp2.x = 450;
+    }
+  },
+
+  // Level 27: Shuffling Controls (Polarity switches on every jump)
+  {
+    id: 27,
+    name: "Shuffling Controls",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 200, w: 90, h: 20 },
+      { x: 380, y: 180, w: 90, h: 20 },
+      { x: 520, y: 220, w: 200, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 255, w: 380, h: 20 } ],
+    jumpCount: 0,
+    wasJumping: false,
+    update: function(player, input) {
+      if (input && input.jump && !this.wasJumping) {
+        this.jumpCount = (this.jumpCount || 0) + 1;
+        this.invertActive = (this.jumpCount % 2 !== 0);
+      }
+      this.wasJumping = (input && input.jump);
+    }
+  },
+
+  // Level 28: UI Covering View (Massive UI block drops over screen center)
+  {
+    id: 28,
+    name: "UI Covering View",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      // Huge banner blocking view of player and spikes
+      { x: 200, y: -200, w: 320, h: 220, id: "uiBanner" }
+    ],
+    hazards: [
+      { x: 320, y: 195, w: 50, h: 25 }
+    ],
+    update: function(player) {
+      const banner = this.platforms.find(p => p.id === "uiBanner");
+      // Player enter karte hi UI banner screen par drop
+      if (banner && player.x > 180 && banner.y < 30) {
+        banner.y += 18;
+      }
+    }
+  },
+
+  // Level 29: Settings Menu Troll (Resolution shrink fakeout)
+  {
+    id: 29,
+    name: "Settings Menu Troll",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 200, w: 40, h: 20, id: "tinyKeyPlat" }, // Ultra small pixel platform
+      { x: 420, y: 220, w: 300, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 255, w: 240, h: 20 } ],
+    update: function(player) {
+      const k = this.platforms.find(p => p.id === "tinyKeyPlat");
+      if (k && player.x > 240 && player.x < 320) {
+        k.w = 15; // Shrunk into 144p pixel width
+      }
+    }
+  },
+
+  // Level 30: Health Bar Betrayal (Sprint leads to spikes, wait deactivates all)
+  {
+    id: 30,
+    name: "Health Bar Betrayal",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 240, y: 190, w: 260, h: 30, id: "deathGauntlet30" }
+    ],
+    waitTimer: 0,
+    update: function(player) {
+      this.waitTimer = (this.waitTimer || 0) + 1;
+      const g = this.hazards.find(h => h.id === "deathGauntlet30");
+      // Agar player 150 frames (~2.5 sec) shanti se wait kare, toh trap khud hat jata hai
+      if (this.waitTimer > 150 && g) {
+        g.y = -600; // Hazard deactivated!
+      }
+    }
+  },
+    // Level 31: Sticky Keys Intro (Rapid jumps freeze character mid-air)
+  {
+    id: 31,
+    name: "Sticky Keys Intro",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 200, w: 100, h: 20 },
+      { x: 440, y: 220, w: 280, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 255, w: 260, h: 20 } ],
+    rapidTaps: 0,
+    update: function(player, input) {
+      if (input && input.jump) {
+        this.rapidTaps = (this.rapidTaps || 0) + 1;
+      }
+      // Sticky keys lock: velocity freeze mid-air
+      if (this.rapidTaps > 35 && player.y < 200) {
+        player.vx = 0;
+        player.vy += 1.5;
+      }
+    }
+  },
+
+  // Level 32: Volume Up Destruction (Ultra fast soundwave spike launch)
+  {
+    id: 32,
+    name: "Volume Up Destruction",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 730, y: 185, w: 45, h: 35, id: "sonicSpike" }
+    ],
+    update: function(player) {
+      const s = this.hazards.find(h => h.id === "sonicSpike");
+      // Player enter karte hi super high speed projectile dash
+      if (s && player.x > 140) {
+        s.x -= 8.5;
+      }
+    }
+  },
+
+  // Level 33: Adware Attack (Fake popup block spawns right in jump path)
+  {
+    id: 33,
+    name: "Adware Attack",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 220, h: 48 },
+      { x: 240, y: 100, w: 140, h: 100, id: "adBlock" }, // Fake ad wall
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 220, y: 255, w: 240, h: 20 } ],
+    update: function(player) {
+      const ad = this.platforms.find(p => p.id === "adBlock");
+      // Close karne ki jagah ad block path ko block karta hai
+      if (ad && player.x > 200 && player.x < 360 && player.y < 120) {
+        player.vx = -4;
+      }
+    }
+  },
+
+  // Level 34: Cursor Trapper (Magnetic sensitivity jitter)
+  {
+    id: 34,
+    name: "Cursor Trapper",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 160, h: 48 },
+      { x: 260, y: 190, w: 100, h: 20 },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 160, y: 255, w: 300, h: 20 } ],
+    jitTick: 0,
+    update: function(player) {
+      this.jitTick = (this.jitTick || 0) + 1;
+      // High/Low sensitivity jitter drag
+      if (player.x > 180 && player.x < 440) {
+        player.x += Math.sin(this.jitTick * 0.25) * 2.8;
+      }
+    }
+  },
+
+  // Level 35: Font Size Chaos (Gigantic letter obstacle blocks view)
+  {
+    id: 35,
+    name: "Font Size Chaos",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      { x: 300, y: -250, w: 120, h: 260, id: "giantLetter" }
+    ],
+    hazards: [ { x: 320, y: 195, w: 40, h: 25 } ],
+    update: function(player) {
+      const l = this.platforms.find(p => p.id === "giantLetter");
+      if (l && player.x > 160 && l.y < -20) {
+        l.y += 16; // Massive letter slammed down
+      }
+    }
+  },
+
+  // Level 36: Double Click Danger (Choppy crawl unless rapid jumping)
+  {
+    id: 36,
+    name: "Double Click Danger",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 220, h: 48 },
+      { x: 300, y: 180, w: 100, h: 20 },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [ { x: 220, y: 255, w: 260, h: 20 } ],
+    update: function(player, input) {
+      // Choppy step speed penalty
+      if (input && (input.left || input.right) && !input.jump) {
+        player.x -= 0.6;
+      }
+    }
+  },
+
+  // Level 37: Resolution Swapper (Physical hitboxes shift off visual)
+  {
+    id: 37,
+    name: "Resolution Swapper",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 150, h: 48 },
+      { x: 240, y: 190, w: 140, h: 20, id: "stretchPlat" },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [ { x: 150, y: 255, w: 350, h: 20 } ],
+    update: function(player) {
+      const sp = this.platforms.find(p => p.id === "stretchPlat");
+      // Player jump aate hi platform hitbox horizontally distort
+      if (sp && player.x > 200 && sp.w > 40) {
+        sp.w -= 1.5;
+        sp.x += 1.5;
+      }
+    }
+  },
+
+  // Level 38: Language Roulette (Reversed trajectory chaos)
+  {
+    id: 38,
+    name: "Language Roulette",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 280, y: 200, w: 120, h: 20 },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 255, w: 300, h: 20 } ],
+    invertActive: true,
+    update: function() {
+      this.invertActive = true;
+    }
+  },
+
+  // Level 39: Quick Time Event Fake (Pressing jump causes ceiling crush)
+  {
+    id: 39,
+    name: "Quick Time Event Fake",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 240, y: -80, w: 220, h: 50, id: "qteRoof" }
+    ],
+    update: function(player, input) {
+      const roof = this.hazards.find(h => h.id === "qteRoof");
+      // Jump dabate hi ceiling crushes directly down
+      if (input && input.jump && roof && player.x > 200 && player.x < 480) {
+        roof.y = 150;
+      }
+    }
+  },
+
+  // Level 40: Credit Roll Scam (False ending slide pushes towards pit)
+  {
+    id: 40,
+    name: "Credit Roll Scam",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 250, h: 48 },
+      { x: 380, y: 220, w: 340, h: 48 }
+    ],
+    hazards: [ { x: 250, y: 260, w: 130, h: 20 } ],
+    update: function(player) {
+      // Level 40 center aate hi fake credit drag backwards
+      if (player.x > 180 && player.x < 360) {
+        player.x -= 1.8;
+      }
+    }
+  },
+        // ==========================================
+  // WORLD 3: OBJECT MALFUNCTIONS (LEVELS 41 - 50)
+  // ==========================================
+
+  // Level 41: Bhaagti Hui Chaabi (Fleeing target door)
+  {
+    id: 41,
+    name: "Bhaagti Hui Chaabi",
+    spawn: { x: 40, y: 150 },
+    door: { x: 500, y: 160, w: 36, h: 60, id: "fleeKey" },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [],
+    update: function(player) {
+      // Player paas aate hi door right side bhagta hai
+      if (player.x > this.door.x - 120 && this.door.x < 650) {
+        this.door.x += 3.2;
+      }
+    }
+  },
+
+  // Level 42: Hologram Door (Front door is a fake projection over pit)
+  {
+    id: 42,
+    name: "Hologram Door",
+    spawn: { x: 40, y: 150 },
+    door: { x: 60, y: 60, w: 36, h: 60 }, // Real door is hidden in ceiling at spawn
+    platforms: [
+      { x: 0, y: 220, w: 220, h: 48 },
+      { x: 460, y: 220, w: 260, h: 48 },
+      // Step to reach ceiling exit
+      { x: 20, y: 130, w: 80, h: 20 }
+    ],
+    hazards: [
+      { x: 220, y: 255, w: 240, h: 20 },
+      // Hologram fake door that lures player into the pit
+      { x: 560, y: 160, w: 36, h: 60, id: "holoDoor" }
+    ],
+    update: function(player) {
+      const holo = this.hazards.find(h => h.id === "holoDoor");
+      if (holo && player.x > 500) {
+        holo.y = -600; // Poof! Disappears revealing pit trap
+      }
+    }
+  },
+
+  // Level 43: Magnetic Spikes (Spikes pull towards player jump trajectory)
+  {
+    id: 43,
+    name: "Magnetic Spikes",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 300, y: 200, w: 100, h: 20 },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [
+      { x: 340, y: 260, w: 30, h: 30, id: "magSpike" }
+    ],
+    update: function(player) {
+      const s = this.hazards.find(h => h.id === "magSpike");
+      // Jump lete hi magnetic spike ceiling ki taraf uth kar attract hota hai
+      if (s && player.y < 190 && player.x > 220 && player.x < 460) {
+        s.y -= 3.5;
+        s.x += (player.x - s.x) * 0.05;
+      }
+    }
+  },
+
+  // Level 44: Bhari Pather Halka Patthar (Massive block flies away, tiny is heavy)
+  {
+    id: 44,
+    name: "Bhari Pather Halka Patthar",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      // Massive looking fake obstacle that flies away
+      { x: 320, y: 140, w: 90, h: 80, id: "balloonRock" }
+    ],
+    hazards: [ { x: 460, y: 195, w: 30, h: 25 } ],
+    update: function(player) {
+      const b = this.platforms.find(p => p.id === "balloonRock");
+      // Touch karte hi gubbare ki tarah hawa me gayab
+      if (b && player.x > 280) {
+        b.y -= 7;
+      }
+    }
+  },
+
+  // Level 45: Elastic Trampoline (Absorbs jump velocity completely)
+  {
+    id: 45,
+    name: "Elastic Trampoline",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 220, w: 80, h: 20, id: "gluePad" }, // Fake jump pad
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 260, w: 280, h: 20 } ],
+    update: function(player) {
+      const pad = this.platforms.find(p => p.id === "gluePad");
+      // Landing karte hi velocity completely zero karke stick kar deta hai
+      if (pad && player.x > pad.x && player.x < pad.x + pad.w && Math.abs(player.y - (pad.y - 20)) < 6) {
+        player.vy = 4; // Pulls down, blocks upward bounce
+      }
+    }
+  },
+
+  // Level 46: Fake Powerup (Collecting item strips jump capacity)
+  {
+    id: 46,
+    name: "Fake Powerup",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 280, h: 48 },
+      { x: 440, y: 220, w: 280, h: 48 }
+    ],
+    hazards: [
+      { x: 280, y: 255, w: 160, h: 20 },
+      // Shiny bait object
+      { x: 200, y: 190, w: 20, h: 20, id: "fakeBoot" }
+    ],
+    hasItem: false,
+    update: function(player, input) {
+      const b = this.hazards.find(h => h.id === "fakeBoot");
+      if (b && player.x > 190 && player.x < 220) {
+        b.y = -600; // Collected!
+        this.hasItem = true;
+      }
+      // Jump capacity becomes zero
+      if (this.hasItem && input && input.jump) {
+        player.vy = 2; // Jump blocked
+      }
+    }
+  },
+
+  // Level 47: Disappearing Key (Timed rush before exit drops into abyss)
+  {
+    id: 47,
+    name: "Disappearing Key",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 280, y: 220, w: 120, h: 48, id: "timedBridge" },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [ { x: 200, y: 260, w: 280, h: 20 } ],
+    rushTimer: 0,
+    update: function(player) {
+      const br = this.platforms.find(p => p.id === "timedBridge");
+      if (player.x > 180) {
+        this.rushTimer = (this.rushTimer || 0) + 1;
+      }
+      // 120 frames (~2 sec) ke baad bridge collapses
+      if (this.rushTimer > 110 && br && br.y < 350) {
+        br.y += 8;
+      }
+    }
+  },
+
+  // Level 48: Light Bulb Puzzle (Spikes activate in sudden dark trigger)
+  {
+    id: 48,
+    name: "Light Bulb Puzzle",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 360, y: -80, w: 60, h: 30, id: "darkSpike48" }
+    ],
+    update: function(player) {
+      const s = this.hazards.find(h => h.id === "darkSpike48");
+      // Player center cross karte hi sudden dark drop
+      if (s && player.x > 300 && s.y < 190) {
+        s.y += 18;
+      }
+    }
+  },
+
+  // Level 49: Moving Goalpost (Door shifts off-screen unless player walks back)
+  {
+    id: 49,
+    name: "Moving Goalpost",
+    spawn: { x: 40, y: 150 },
+    door: { x: 560, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [],
+    update: function(player) {
+      // Door bhaagta hai jab player forward sprint karta hai
+      if (player.x > 400 && this.door.x < 670) {
         this.door.x += 3.5;
       }
     }
   },
 
-  // Level 6: Claustrophobia
+  // Level 50: Mirror Block (Rigid collision block moves towards player)
   {
-    id: 6,
-    name: "Claustrophobia",
-    spawn: { x: 40, y: 160 },
-    door: { x: 620, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 180, y: 130, w: 320, h: 30 }
-    ],
-    hazards: [ { x: 290, y: 210, w: 40, h: 10 } ],
-    update: function(player) {}
-  },
-
-  // Level 7: Spike Wave
-  {
-    id: 7,
-    name: "Spike Wave",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 90, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 180, y: 185, w: 75, h: 20 },
-      { x: 310, y: 155, w: 75, h: 20 },
-      { x: 440, y: 125, w: 75, h: 20 },
-      { x: 560, y: 150, w: 160, h: 90 }
-    ],
-    hazards: [ { x: 120, y: 250, w: 440, h: 25, id: "spk7" } ],
-    update: function(player) {
-      const h = this.hazards.find(x => x.id === "spk7");
-      if (h && h.y > 220) h.y -= 0.15;
-    }
-  },
-
-  // Level 8: Elevator Shaft
-  {
-    id: 8,
-    name: "Elevator Shaft",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 130, h: 48 },
-      { x: 230, y: 140, w: 90, h: 20, id: "lift8" },
-      { x: 480, y: 220, w: 240, h: 48 }
-    ],
-    hazards: [ { x: 130, y: 255, w: 350, h: 20 } ],
-    liftDir: 1,
-    update: function(player) {
-      const lift = this.platforms.find(x => x.id === "lift8");
-      if (lift) {
-        lift.y += (this.liftDir || 1) * 1.5;
-        if (lift.y > 210) this.liftDir = -1;
-        if (lift.y < 100) this.liftDir = 1;
-      }
-    }
-  },
-
-  // Level 9: Twin Daggers
-  {
-    id: 9,
-    name: "Twin Daggers",
+    id: 50,
+    name: "Mirror Block",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 270, y: -60, w: 30, h: 30, id: "d1" },
-      { x: 460, y: -60, w: 30, h: 30, id: "d2" }
-    ],
-    update: function(player) {
-      const d1 = this.hazards.find(h => h.id === "d1");
-      const d2 = this.hazards.find(h => h.id === "d2");
-      if (d1 && player.x > 210 && d1.y < 210) d1.y += 14;
-      if (d2 && player.x > 400 && d2.y < 210) d2.y += 14;
-    }
-  },
-
-  // Level 10: Stepping Stones (Solid, perfectly balanced, no crash)
-  {
-    id: 10,
-    name: "Stepping Stones",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 110, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 130, h: 48 },
-      { x: 170, y: 195, w: 80, h: 20 },
-      { x: 290, y: 170, w: 80, h: 20 },
-      { x: 410, y: 145, w: 80, h: 20 },
-      { x: 520, y: 170, w: 200, h: 80 }
-    ],
-    hazards: [ { x: 130, y: 260, w: 390, h: 25 } ],
-    update: function(player) {}
-  },
-    // Level 11: Brain Reversal (Inverted controls mid-air)
-  {
-    id: 11,
-    name: "Brain Reversal",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 140, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 220, h: 48 },
-      { x: 450, y: 220, w: 270, h: 48 }
-    ],
-    hazards: [ { x: 220, y: 255, w: 230, h: 20 } ],
-    update: function(player) {
-      // Beech me jump lene par controls ulti chalenge
-      this.invertActive = (player.x > 220 && player.x < 450);
-    }
-  },
-
-  // Level 12: Shrinking Island (Platform shrinks on standing)
-  {
-    id: 12,
-    name: "Melting Ice",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 120, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 250, y: 190, w: 130, h: 22, id: "meltPlat" },
-      { x: 480, y: 180, w: 240, h: 60 }
-    ],
-    hazards: [ { x: 140, y: 255, w: 340, h: 20 } ],
-    update: function(player) {
-      const m = this.platforms.find(p => p.id === "meltPlat");
-      if (m && player.x > m.x - 5 && player.x < m.x + m.w + 5) {
-        if (m.w > 20) {
-          m.w -= 0.6;
-          m.x += 0.3; // Dono side se chhota hoga
-        }
-      }
-    }
-  },
-
-  // Level 13: Timed Laser Wall
-  {
-    id: 13,
-    name: "Red Laser Barrier",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 140, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 340, y: 60, w: 20, h: 160, id: "laser13" }
-    ],
-    timer: 0,
-    update: function() {
-      this.timer = (this.timer || 0) + 1;
-      const l = this.hazards.find(h => h.id === "laser13");
-      if (l) {
-        // Har 45 frames me laser on/off hoga
-        l.y = (Math.floor(this.timer / 45) % 2 === 0) ? 60 : -400;
-      }
-    }
-  },
-
-  // Level 14: The Phantom Floor (Floor falls from behind)
-  {
-    id: 14,
-    name: "Crumbling Runway",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 120, y: 220, w: 100, h: 48, id: "f1" },
-      { x: 220, y: 220, w: 100, h: 48, id: "f2" },
-      { x: 320, y: 220, w: 100, h: 48, id: "f3" },
-      { x: 420, y: 220, w: 100, h: 48, id: "f4" },
-      { x: 520, y: 220, w: 200, h: 48 }
-    ],
-    hazards: [ { x: 120, y: 260, w: 400, h: 20 } ],
-    update: function(player) {
-      ['f1', 'f2', 'f3', 'f4'].forEach((id, idx) => {
-        const blk = this.platforms.find(p => p.id === id);
-        if (blk && player.x > blk.x + 40) {
-          blk.y += 10; // Peeche ka rasta girta jayega
-        }
-      });
-    }
-  },
-
-  // Level 15: The Reverse Troll (Door is at the starting position)
-  {
-    id: 15,
-    name: "Look Behind You",
-    spawn: { x: 180, y: 150 },
-    door: { x: 20, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [
-      { x: 600, y: 190, w: 50, h: 30 } // Aage fake reward trap
-    ],
-    update: function() {}
-  },
-
-  // Level 16: Flying Guillotine
-  {
-    id: 16,
-    name: "Guillotine Rush",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 500, y: -40, w: 40, h: 80, id: "guillotine" }
-    ],
-    update: function(player) {
-      const g = this.hazards.find(h => h.id === "guillotine");
-      if (g && player.x > 320 && g.y < 140) {
-        g.y += 16; // Fast drop hammer
-      }
-    }
-  },
-
-  // Level 17: Floating Islands with Sneaky Spikes
-  {
-    id: 17,
-    name: "Minefield Isles",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 90, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 100, h: 48 },
-      { x: 180, y: 190, w: 70, h: 20 },
-      { x: 310, y: 160, w: 70, h: 20 },
-      { x: 440, y: 130, w: 70, h: 20 },
-      { x: 560, y: 150, w: 160, h: 90 }
-    ],
-    hazards: [
-      { x: 100, y: 255, w: 460, h: 20 },
-      { x: 330, y: 145, w: 20, h: 15 } // Island ke theek upar hidden spike
-    ],
-    update: function() {}
-  },
-
-  // Level 18: Anti-Gravity Zone (High float jumps)
-  {
-    id: 18,
-    name: "Zero G Shaft",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 80, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 150, h: 48 },
-      { x: 550, y: 140, w: 170, h: 100 }
-    ],
-    hazards: [ { x: 150, y: 255, w: 400, h: 20 } ],
-    update: function(player) {
-      // Floating region: jump boost simulation
-      if (player.x > 200 && player.x < 500 && player.vy > 1) {
-        player.vy = 0.8; // Slow moon gravity fall
-      }
-    }
-  },
-
-  // Level 19: Troll Ceiling Drop
-  {
-    id: 19,
-    name: "The Crushing Roof",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 720, h: 48 },
-      { x: 260, y: 30, w: 180, h: 40, id: "crusher" }
+      { x: 600, y: 170, w: 40, h: 50, id: "mirrorRock50" }
     ],
     hazards: [],
-    update: function(player) {
-      const c = this.platforms.find(p => p.id === "crusher");
-      if (c && player.x > 230 && c.y < 160) {
-        c.y += 2.5; // Chhat neeche dabane aayegi
+    update: function(player, input) {
+      const r = this.platforms.find(p => p.id === "mirrorRock50");
+      // Player right jayega toh block mirror karke left bhagega
+      if (r && input && input.right && r.x > 260) {
+        r.x -= 3.2;
       }
     }
   },
-
-  // Level 20: The Triple Jump Dilemma (Milestone troll)
+      // Level 51: Exploding Coin (Proximity mine disguised as gold coin)
   {
-    id: 20,
-    name: "Patience Test",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 110, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 190, y: 200, w: 60, h: 20 },
-      { x: 310, y: 180, w: 60, h: 20 },
-      { x: 430, y: 160, w: 60, h: 20 },
-      { x: 530, y: 170, w: 190, h: 80 }
-    ],
-    hazards: [
-      { x: 120, y: 255, w: 410, h: 20 },
-      { x: 435, y: -40, w: 25, h: 25, id: "dropRock" }
-    ],
-    update: function(player) {
-      const rock = this.hazards.find(h => h.id === "dropRock");
-      if (rock && player.x > 380 && rock.y < 155) {
-        rock.y += 12; // 3rd step par aate hi upar se patthar girega
-      }
-    }
-  },
-    // Level 21: The Fake Springboard (Launch into ceiling spikes)
-  {
-    id: 21,
-    name: "Troll Trampoline",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 260, y: 215, w: 50, h: 15, id: "pad" },
-      { x: 500, y: 220, w: 220, h: 48 }
-    ],
-    hazards: [
-      { x: 140, y: 255, w: 360, h: 20 },
-      { x: 250, y: 40, w: 70, h: 20 } // Trampoline ke theek upar ceiling spike
-    ],
-    update: function(player) {
-      const pad = this.platforms.find(p => p.id === "pad");
-      if (pad && player.x > pad.x - 5 && player.x < pad.x + pad.w + 5 && Math.abs(player.y - (pad.y - 20)) < 10) {
-        player.vy = -16; // Super high launch seedha ceiling me
-      }
-    }
-  },
-
-  // Level 22: Blink Platforms (Alternate vanishing act)
-  {
-    id: 22,
-    name: "Blinking Light",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 140, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 200, y: 200, w: 80, h: 20, id: "b1" },
-      { x: 360, y: 180, w: 80, h: 20, id: "b2" },
-      { x: 520, y: 200, w: 200, h: 48 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 400, h: 20 } ],
-    tick: 0,
-    update: function() {
-      this.tick = (this.tick || 0) + 1;
-      const b1 = this.platforms.find(p => p.id === "b1");
-      const b2 = this.platforms.find(p => p.id === "b2");
-      if (b1 && b2) {
-        const toggle = Math.floor(this.tick / 50) % 2 === 0;
-        b1.y = toggle ? 200 : -500;
-        b2.y = toggle ? -500 : 180;
-      }
-    }
-  },
-
-  // Level 23: Slippery Runway
-  {
-    id: 23,
-    name: "Zero Friction",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [
-      { x: 340, y: 195, w: 40, h: 25 } // Beech me spike
-    ],
-    update: function(player) {
-      // Ice sliding inertia boost
-      if (player.vx && Math.abs(player.vx) > 0.1) {
-        player.x += player.vx > 0 ? 1.2 : -1.2;
-      }
-    }
-  },
-
-  // Level 24: Descending Ceiling Corridor
-  {
-    id: 24,
-    name: "The Squeeze",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 180, y: 80, w: 360, h: 30, id: "roof24" }
-    ],
-    hazards: [ { x: 300, y: 215, w: 30, h: 10 } ],
-    update: function(player) {
-      const r = this.platforms.find(p => p.id === "roof24");
-      if (r && player.x > 160 && r.y < 150) {
-        r.y += 0.4; // Slowly descends
-      }
-    }
-  },
-
-  // Level 25: The Phantom Door (Fake door spawns spikes, real door behind)
-  {
-    id: 25,
-    name: "Mirage Door",
-    spawn: { x: 40, y: 150 },
-    door: { x: 50, y: 160, w: 36, h: 60 }, // Real door is at spawn
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [
-      { x: 580, y: 170, w: 36, h: 50, id: "fakeDoorTrap" } // Fake door area has trap
-    ],
-    update: function() {}
-  },
-
-  // Level 26: The Chasing Wall of Spikes
-  {
-    id: 26,
-    name: "The Pursuer",
-    spawn: { x: 100, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [
-      { x: 0, y: 60, w: 25, h: 170, id: "pursuer" },
-      { x: 320, y: 215, w: 35, h: 12 }
-    ],
-    update: function() {
-      const w = this.hazards.find(h => h.id === "pursuer");
-      if (w && w.x < 560) {
-        w.x += 1.4; // Spikes chase the player from the left
-      }
-    }
-  },
-
-  // Level 27: Double Jump Trap
-  {
-    id: 27,
-    name: "Don't Double Jump",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 240, h: 48 },
-      { x: 440, y: 220, w: 280, h: 48 }
-    ],
-    hazards: [
-      { x: 240, y: 255, w: 200, h: 20 },
-      { x: 310, y: 60, w: 60, h: 20 } // Spikes hit if jumping too high
-    ],
-    update: function() {}
-  },
-
-  // Level 28: Horizontal Missile Barrage
-  {
-    id: 28,
-    name: "Incoming Fire",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 740, y: 180, w: 30, h: 15, id: "bullet1" }
-    ],
-    update: function(player) {
-      const b = this.hazards.find(h => h.id === "bullet1");
-      if (b) {
-        b.x -= 5;
-        if (b.x < -40) b.x = 740; // Infinite loop projectile
-      }
-    }
-  },
-
-  // Level 29: Staggered Crumble
-  {
-    id: 29,
-    name: "Precision Dash",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 110, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 100, h: 48 },
-      { x: 160, y: 200, w: 65, h: 20, id: "sc1" },
-      { x: 280, y: 180, w: 65, h: 20, id: "sc2" },
-      { x: 400, y: 160, w: 65, h: 20, id: "sc3" },
-      { x: 520, y: 160, w: 200, h: 80 }
-    ],
-    hazards: [ { x: 100, y: 255, w: 420, h: 20 } ],
-    update: function(player) {
-      ['sc1', 'sc2', 'sc3'].forEach((id) => {
-        const p = this.platforms.find(x => x.id === id);
-        if (p && player.x > p.x - 5 && player.x < p.x + p.w + 5) {
-          if (p.y < 260) p.y += 1.8;
-        }
-      });
-    }
-  },
-
-  // Level 30: Boss Corridor (The Pendulum Spike)
-  {
-    id: 30,
-    name: "The Pendulum",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [
-      { x: 340, y: 120, w: 35, h: 35, id: "pendulum" }
-    ],
-    angle: 0,
-    update: function() {
-      this.angle = (this.angle || 0) + 0.05;
-      const pen = this.hazards.find(h => h.id === "pendulum");
-      if (pen) {
-        pen.x = 340 + Math.sin(this.angle) * 140; // Swings left and right smoothly
-      }
-    }
-  },
-      // Level 31: False Ceiling Drop
-  {
-    id: 31,
-    name: "Crumbling Attic",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 260, y: 40, w: 120, h: 30, id: "attic" }
-    ],
-    hazards: [
-      { x: 260, y: 70, w: 120, h: 15, id: "atticSpike" }
-    ],
-    update: function(player) {
-      const a = this.platforms.find(p => p.id === "attic");
-      const s = this.hazards.find(h => h.id === "atticSpike");
-      if (a && s && player.x > 220 && a.y < 150) {
-        a.y += 6;
-        s.y += 6;
-      }
-    }
-  },
-
-  // Level 32: The Speed Trap (Forced fast running into sudden pit)
-  {
-    id: 32,
-    name: "Hyper Dash",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 380, h: 48 },
-      { x: 500, y: 220, w: 220, h: 48 }
-    ],
-    hazards: [ { x: 380, y: 255, w: 120, h: 20 } ],
-    update: function(player) {
-      if (player.x > 150 && player.x < 360) {
-        player.x += 2.5; // Automatic wind push towards pit
-      }
-    }
-  },
-
-  // Level 33: Stalactite Rain
-  {
-    id: 33,
-    name: "Icicle Fall",
+    id: 51,
+    name: "Exploding Coin",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
     hazards: [
-      { x: 200, y: -40, w: 20, h: 30, id: "ice1" },
-      { x: 350, y: -40, w: 20, h: 30, id: "ice2" },
-      { x: 500, y: -40, w: 20, h: 30, id: "ice3" }
+      { x: 340, y: 195, w: 18, h: 18, id: "explodingCoin" }
     ],
     update: function(player) {
-      ['ice1', 'ice2', 'ice3'].forEach((id, idx) => {
-        const ice = this.hazards.find(h => h.id === id);
-        if (ice && player.x > 150 + idx * 140 && ice.y < 210) {
-          ice.y += 12;
-        }
-      });
-    }
-  },
-
-  // Level 34: Elevator to Nowhere (Platform goes straight into ceiling spike)
-  {
-    id: 34,
-    name: "Death Elevator",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 240, y: 210, w: 80, h: 20, id: "trapLift" },
-      { x: 480, y: 220, w: 240, h: 48 }
-    ],
-    hazards: [
-      { x: 140, y: 255, w: 340, h: 20 },
-      { x: 240, y: 30, w: 80, h: 20 } // Spike on ceiling right above lift
-    ],
-    update: function(player) {
-      const l = this.platforms.find(p => p.id === "trapLift");
-      if (l && player.x > l.x - 5 && player.x < l.x + l.w + 5 && l.y > 60) {
-        l.y -= 3; // Rises too fast into spikes if player stays on it
+      const c = this.hazards.find(h => h.id === "explodingCoin");
+      // Touch karte hi mine radius blast
+      if (c && Math.abs(player.x - c.x) < 30) {
+        c.w = 90;
+        c.h = 90;
+        c.x -= 35;
+        c.y -= 35;
       }
     }
   },
 
-  // Level 35: The Mirage Floor
+  // Level 52: Heavy Boot Trap (Tilting platform slide)
   {
-    id: 35,
-    name: "Hollow Ground",
+    id: 52,
+    name: "Heavy Boot Trap",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 180, h: 48 },
-      { x: 380, y: 220, w: 340, h: 48 }
+      { x: 240, y: 220, w: 160, h: 20, id: "tiltBridge" },
+      { x: 480, y: 220, w: 240, h: 48 }
     ],
-    hazards: [ { x: 180, y: 255, w: 200, h: 20 } ],
-    update: function() {}
+    hazards: [ { x: 180, y: 260, w: 300, h: 20 } ],
+    update: function(player) {
+      const tb = this.platforms.find(p => p.id === "tiltBridge");
+      // Weight padte hi platform violently sink
+      if (tb && player.x > 250 && player.x < 400 && tb.y < 340) {
+        tb.y += 3.8;
+      }
+    }
   },
 
-  // Level 36: Double Sided Compactor
+  // Level 53: Teleporting Platforms (Swapping rhythm safe blocks)
   {
-    id: 36,
-    name: "The Compactor",
+    id: 53,
+    name: "Teleporting Platforms",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 500, y: 120, w: 30, h: 100, id: "wallRight" }
-    ],
-    hazards: [],
-    update: function(player) {
-      const w = this.platforms.find(p => p.id === "wallRight");
-      if (w && player.x > 250 && w.x > 350) {
-        w.x -= 2; // Wall charges left to crush player
-      }
-    }
-  },
-
-  // Level 37: Floating Stair Disconnect
-  {
-    id: 37,
-    name: "Broken Steps",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 100, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 110, h: 48 },
-      { x: 170, y: 190, w: 70, h: 20 },
-      { x: 300, y: 160, w: 70, h: 20, id: "ghostStep" },
-      { x: 430, y: 130, w: 70, h: 20 },
-      { x: 540, y: 150, w: 180, h: 80 }
-    ],
-    hazards: [ { x: 110, y: 255, w: 430, h: 20 } ],
-    update: function(player) {
-      const g = this.platforms.find(p => p.id === "ghostStep");
-      if (g && player.x > 270) {
-        g.y = -500; // Middle step vanishes when approached
-      }
-    }
-  },
-
-  // Level 38: Rolling Boulder
-  {
-    id: 38,
-    name: "Indiana Troll",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 700, y: 175, w: 40, h: 45, id: "boulder" }
-    ],
-    update: function(player) {
-      const b = this.hazards.find(h => h.id === "boulder");
-      if (b && player.x > 180) {
-        b.x -= 4.5; // Rolls towards the player
-      }
-    }
-  },
-
-  // Level 39: Shrinking Jump Pads
-  {
-    id: 39,
-    name: "Needle Eye",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 120, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 200, y: 200, w: 40, h: 20 },
-      { x: 340, y: 175, w: 35, h: 20 },
-      { x: 470, y: 150, w: 30, h: 20 },
-      { x: 560, y: 170, w: 160, h: 70 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 440, h: 20 } ],
-    update: function() {}
-  },
-
-  // Level 40: Boss Level - Bullet Wave & Sinking Island
-  {
-    id: 40,
-    name: "The Crucible",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 140, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 140, h: 48 },
-      { x: 240, y: 210, w: 180, h: 20, id: "sinkingArena" },
-      { x: 500, y: 200, w: 220, h: 60 }
+      { x: 220, y: 200, w: 80, h: 20, id: "swapPlatA" },
+      { x: 380, y: 200, w: 80, h: 20, id: "swapPlatB" },
+      { x: 520, y: 220, w: 200, h: 48 }
     ],
-    hazards: [
-      { x: 140, y: 255, w: 360, h: 20 },
-      { x: 720, y: 160, w: 25, h: 15, id: "bullet40" }
-    ],
-    update: function(player) {
-      const arena = this.platforms.find(p => p.id === "sinkingArena");
-      if (arena && player.x > arena.x && player.x < arena.x + arena.w && arena.y < 240) {
-        arena.y += 0.3; // Very slow sink under weight
-      }
-      const b = this.hazards.find(h => h.id === "bullet40");
-      if (b) {
-        b.x -= 4;
-        if (b.x < -30) b.x = 720;
+    hazards: [ { x: 140, y: 255, w: 380, h: 20 } ],
+    tick53: 0,
+    update: function() {
+      this.tick53 = (this.tick53 || 0) + 1;
+      const pa = this.platforms.find(p => p.id === "swapPlatA");
+      const pb = this.platforms.find(p => p.id === "swapPlatB");
+      if (this.tick53 % 90 === 0) {
+        if (pa && pb) {
+          const tempX = pa.x;
+          pa.x = pb.x;
+          pb.x = tempX;
+        }
       }
     }
   },
-   // Level 41: Conveyor Belt Push
+
+  // Level 54: Fake Exit Scam (Exit teleports player to trap chamber)
   {
-    id: 41,
-    name: "Treadmill Run",
+    id: 54,
+    name: "Fake Exit Scam",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 720, h: 48 }
     ],
-    hazards: [ { x: 380, y: 200, w: 35, h: 20 } ],
+    hazards: [
+      { x: 580, y: 195, w: 35, h: 25, id: "trapFakeExit" }
+    ],
     update: function(player) {
-      // Platform push player back towards hazards
-      if (player.x > 180 && player.x < 520) {
-        player.x -= 1.8;
+      // Exit ke theek muh par hidden pit spike reveal
+      if (player.x > 540) {
+        this.door.y = -600; // Fake door poof!
       }
     }
   },
 
-  // Level 42: The Bait Spike (Floating coin trap)
+  // Level 55: Ice Block Meltdown (Melting floor on touch)
   {
-    id: 42,
-    name: "Curiosity Kills",
+    id: 55,
+    name: "Ice Block Meltdown",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 160, h: 48 },
+      { x: 240, y: 210, w: 140, h: 20, id: "iceMelt" },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [ { x: 160, y: 260, w: 320, h: 20 } ],
+    update: function(player) {
+      const ice = this.platforms.find(p => p.id === "iceMelt");
+      if (ice && player.x > 240 && player.x < 380) {
+        if (ice.w > 20) ice.w -= 1.8;
+        if (ice.y < 320) ice.y += 2.2;
+      }
+    }
+  },
+
+  // Level 56: Growing Spikes (Spikes expand vertically at jump apex)
+  {
+    id: 56,
+    name: "Growing Spikes",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 260, h: 48 },
+      { x: 440, y: 220, w: 280, h: 48 }
+    ],
+    hazards: [
+      { x: 300, y: 240, w: 50, h: 20, id: "growSpike" }
+    ],
+    update: function(player) {
+      const s = this.hazards.find(h => h.id === "growSpike");
+      // Player hawa me aate hi spikes khinch ke lambe
+      if (s && player.y < 180 && player.x > 260 && s.y > 150) {
+        s.y -= 7;
+        s.h += 7;
+      }
+    }
+  },
+
+  // Level 57: Disappearing Act (Player turns invisible near center)
+  {
+    id: 57,
+    name: "Disappearing Act",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [ { x: 350, y: 195, w: 40, h: 25 } ],
+    update: function(player) {
+      // Lever trigger: character blind running
+      if (player.x > 220 && player.x < 550) {
+        player.hidden = true;
+      } else {
+        player.hidden = false;
+      }
+    }
+  },
+
+  // Level 58: Wind Tunnel Mess (Continuous drag pushing back)
+  {
+    id: 58,
+    name: "Wind Tunnel Mess",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 220, h: 48 },
-      { x: 460, y: 220, w: 260, h: 48 }
-    ],
-    hazards: [
-      { x: 220, y: 255, w: 240, h: 20 },
-      { x: 340, y: 90, w: 20, h: 20, id: "baitSpike" }
-    ],
-    update: function(player) {
-      const spk = this.hazards.find(h => h.id === "baitSpike");
-      if (spk && player.x > 280 && spk.y < 210) {
-        spk.y += 10; // Mid-jump trap
-      }
-    }
-  },
-
-  // Level 43: Double Drop Pillars
-  {
-    id: 43,
-    name: "Dual Crumbles",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 120, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 220, y: 190, w: 75, h: 20, id: "p1" },
-      { x: 380, y: 170, w: 75, h: 20, id: "p2" },
-      { x: 520, y: 180, w: 200, h: 70 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 400, h: 20 } ],
-    update: function(player) {
-      const p1 = this.platforms.find(p => p.id === "p1");
-      const p2 = this.platforms.find(p => p.id === "p2");
-      if (p1 && player.x > p1.x - 5 && player.x < p1.x + p1.w + 5 && p1.y < 260) {
-        p1.y += 2.2;
-      }
-      if (p2 && player.x > p2.x - 5 && player.x < p2.x + p2.w + 5 && p2.y < 260) {
-        p2.y += 2.2;
-      }
-    }
-  },
-
-  // Level 44: Rising Lava Tide
-  {
-    id: 44,
-    name: "Lava Surging",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 90, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 100, h: 48 },
-      { x: 160, y: 185, w: 65, h: 20 },
-      { x: 280, y: 155, w: 65, h: 20 },
-      { x: 400, y: 125, w: 65, h: 20 },
-      { x: 520, y: 150, w: 200, h: 90 }
-    ],
-    hazards: [ { x: 100, y: 260, w: 420, h: 25, id: "lava44" } ],
-    update: function() {
-      const l = this.hazards.find(h => h.id === "lava44");
-      if (l && l.y > 210) l.y -= 0.12;
-    }
-  },
-
-  // Level 45: Teleport Trap (Stepping forward nudges player backward)
-  {
-    id: 45,
-    name: "Spatial Distortion",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [ { x: 460, y: 200, w: 30, h: 20 } ],
-    update: function(player) {
-      if (player.x > 320 && player.x < 330) {
-        player.x = 240; // Glitch loop setback
-      }
-    }
-  },
-
-  // Level 46: The Hammer Slam
-  {
-    id: 46,
-    name: "Hammer Time",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 360, y: -20, w: 45, h: 90, id: "slammer" }
-    ],
-    update: function(player) {
-      const s = this.hazards.find(h => h.id === "slammer");
-      if (s && player.x > 260 && s.y < 130) {
-        s.y += 18; // Super fast slam
-      }
-    }
-  },
-
-  // Level 47: The Vanishing Bridge
-  {
-    id: 47,
-    name: "Fade to Nothing",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 140, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 200, y: 200, w: 260, h: 20, id: "vanishPlat" },
-      { x: 520, y: 200, w: 200, h: 48 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 400, h: 20 } ],
-    update: function(player) {
-      const v = this.platforms.find(p => p.id === "vanishPlat");
-      if (v && player.x > 280) {
-        v.y = -600; // Whole bridge disappears once player commits
-      }
-    }
-  },
-
-  // Level 48: Sine Wave Platforms
-  {
-    id: 48,
-    name: "Wavy Waters",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 200, y: 190, w: 70, h: 20, id: "wave1" },
-      { x: 350, y: 190, w: 70, h: 20, id: "wave2" },
-      { x: 500, y: 190, w: 220, h: 60 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 380, h: 20 } ],
-    angle: 0,
-    update: function() {
-      this.angle = (this.angle || 0) + 0.05;
-      const w1 = this.platforms.find(p => p.id === "wave1");
-      const w2 = this.platforms.find(p => p.id === "wave2");
-      if (w1) w1.y = 190 + Math.sin(this.angle) * 30;
-      if (w2) w2.y = 190 + Math.cos(this.angle) * 30;
-    }
-  },
-
-  // Level 49: False Roof Trap
-  {
-    id: 49,
-    name: "Low Clearance",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 260, y: 110, w: 180, h: 25 }
-    ],
-    hazards: [
-      { x: 320, y: 205, w: 40, h: 15 } // Must crouch or jump with minimal power
-    ],
-    update: function() {}
-  },
-
-  // Level 50: Halfway Gauntlet (Boss Troll)
-  {
-    id: 50,
-    name: "Midway Menace",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 220, y: 200, w: 80, h: 20, id: "mid1" },
-      { x: 380, y: 170, w: 80, h: 20, id: "mid2" },
-      { x: 520, y: 190, w: 200, h: 60 }
-    ],
-    hazards: [
-      { x: 140, y: 255, w: 380, h: 20 },
-      { x: 740, y: 150, w: 30, h: 15, id: "bossBullet" }
-    ],
-    update: function() {
-      const b = this.hazards.find(h => h.id === "bossBullet");
-      if (b) {
-        b.x -= 4.2;
-        if (b.x < -30) b.x = 740;
-      }
-    }
-  },
-      // Level 51: Low Gravity High Stakes
-  {
-    id: 51,
-    name: "Moon Bounce",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 140, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 260, y: 220, w: 80, h: 20 },
+      { x: 300, y: 200, w: 100, h: 20 },
       { x: 480, y: 220, w: 240, h: 48 }
     ],
-    hazards: [
-      { x: 140, y: 255, w: 340, h: 20 },
-      { x: 250, y: 50, w: 100, h: 20 }
-    ],
+    hazards: [ { x: 220, y: 255, w: 260, h: 20 } ],
     update: function(player) {
-      if (player.x > 140 && player.x < 480 && player.vy > 0) {
-        player.vy *= 0.85; // Low-gravity float
+      // Powerful backward draft
+      if (player.x > 180) {
+        player.x -= 2.4;
       }
     }
   },
 
-  // Level 52: The Bait Pit
-  {
-    id: 52,
-    name: "Greed Trap",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 240, h: 48 },
-      { x: 300, y: 240, w: 80, h: 20, id: "pitStep" },
-      { x: 440, y: 220, w: 280, h: 48 }
-    ],
-    hazards: [
-      { x: 240, y: 260, w: 200, h: 20 },
-      { x: 320, y: 100, w: 40, h: 20, id: "pitCeiling" }
-    ],
-    update: function(player) {
-      const c = this.hazards.find(h => h.id === "pitCeiling");
-      if (c && player.x > 280 && player.x < 400 && c.y < 220) {
-        c.y += 10;
-      }
-    }
-  },
-
-  // Level 53: Collapsing Bridge Sequence
-  {
-    id: 53,
-    name: "Domino Steps",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 120, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 100, h: 48 },
-      { x: 160, y: 205, w: 60, h: 20, id: "dm1" },
-      { x: 270, y: 185, w: 60, h: 20, id: "dm2" },
-      { x: 380, y: 165, w: 60, h: 20, id: "dm3" },
-      { x: 490, y: 170, w: 230, h: 70 }
-    ],
-    hazards: [ { x: 100, y: 255, w: 390, h: 20 } ],
-    update: function(player) {
-      ['dm1', 'dm2', 'dm3'].forEach((id, idx) => {
-        const p = this.platforms.find(item => item.id === id);
-        if (p && player.x > p.x - 5 && player.x < p.x + p.w + 5 && p.y < 270) {
-          p.y += 2.4 + idx * 0.4;
-        }
-      });
-    }
-  },
-
-  // Level 54: The Phantom Ceiling
-  {
-    id: 54,
-    name: "Ghost Roof",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 280, y: 80, w: 160, h: 30, id: "ghostRoof" }
-    ],
-    hazards: [ { x: 330, y: 205, w: 30, h: 15 } ],
-    update: function(player) {
-      const gr = this.platforms.find(p => p.id === "ghostRoof");
-      if (gr && player.x > 240 && gr.y < 140) {
-        gr.y += 1.5;
-      }
-    }
-  },
-
-  // Level 55: The Door Swap Troll
-  {
-    id: 55,
-    name: "Fake Destination",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [
-      { x: 610, y: 180, w: 50, h: 40, id: "fakeDoorSpike" }
-    ],
-    swapped: false,
-    update: function(player) {
-      if (player.x > 450 && !this.swapped) {
-        this.door.x = 40; // Door peeche spawn par teleport ho jayega
-        this.swapped = true;
-      }
-    }
-  },
-
-  // Level 56: Speed Squeeze
-  {
-    id: 56,
-    name: "Fast Lane",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 220, y: 130, w: 260, h: 25 }
-    ],
-    hazards: [
-      { x: 300, y: 205, w: 35, h: 15 },
-      { x: 420, y: 205, w: 35, h: 15 }
-    ],
-    update: function(player) {
-      if (player.x > 180 && player.x < 500) {
-        player.x += 1.6; // Wind drag pushing forward
-      }
-    }
-  },
-
-  // Level 57: The Elevator Deception
-  {
-    id: 57,
-    name: "Deceptive Lift",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 130, h: 48 },
-      { x: 240, y: 200, w: 80, h: 20, id: "fakeLift" },
-      { x: 470, y: 220, w: 250, h: 48 }
-    ],
-    hazards: [ { x: 130, y: 255, w: 340, h: 20 } ],
-    update: function(player) {
-      const fl = this.platforms.find(p => p.id === "fakeLift");
-      if (fl && player.x > fl.x - 5 && player.x < fl.x + fl.w + 5) {
-        fl.y += 14; // Stand karte hi seedha deep drop
-      }
-    }
-  },
-
-  // Level 58: Pendulum Gauntlet
-  {
-    id: 58,
-    name: "Twin Pendulums",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 250, y: 140, w: 30, h: 30, id: "pen1" },
-      { x: 450, y: 140, w: 30, h: 30, id: "pen2" }
-    ],
-    angle: 0,
-    update: function() {
-      this.angle = (this.angle || 0) + 0.06;
-      const p1 = this.hazards.find(h => h.id === "pen1");
-      const p2 = this.hazards.find(h => h.id === "pen2");
-      if (p1) p1.x = 250 + Math.sin(this.angle) * 70;
-      if (p2) p2.x = 450 + Math.cos(this.angle) * 70;
-    }
-  },
-
-  // Level 59: The Rising Slabs
+  // Level 59: Shaking Camera Bridge (Tremor instability)
   {
     id: 59,
-    name: "Ascending Steps",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 90, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 180, y: 180, w: 70, h: 20 },
-      { x: 310, y: 150, w: 70, h: 20 },
-      { x: 440, y: 120, w: 70, h: 20 },
-      { x: 550, y: 140, w: 170, h: 90 }
-    ],
-    hazards: [
-      { x: 120, y: 255, w: 430, h: 20 },
-      { x: 330, y: -40, w: 25, h: 30, id: "fallingSpike59" }
-    ],
-    update: function(player) {
-      const s = this.hazards.find(h => h.id === "fallingSpike59");
-      if (s && player.x > 270 && s.y < 145) {
-        s.y += 12;
-      }
-    }
-  },
-
-  // Level 60: Boss Milestone - Compactor Runway
-  {
-    id: 60,
-    name: "The Pincer Run",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
-    ],
-    hazards: [
-      { x: -50, y: 60, w: 30, h: 160, id: "leftWall" },
-      { x: 740, y: 160, w: 25, h: 20, id: "rocket60" }
-    ],
-    update: function() {
-      const lw = this.hazards.find(h => h.id === "leftWall");
-      if (lw && lw.x < 520) {
-        lw.x += 1.5;
-      }
-      const r = this.hazards.find(h => h.id === "rocket60");
-      if (r) {
-        r.x -= 4.5;
-        if (r.x < -30) r.x = 740;
-      }
-    }
-  },
-      // ==========================================
-  // PART 7: LEVELS 61 - 70
-  // ==========================================
-
-  // Level 61: The Shifting Void
-  {
-    id: 61,
-    name: "Shifting Void",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 220, y: 190, w: 75, h: 20, id: "sv1" },
-      { x: 380, y: 170, w: 75, h: 20, id: "sv2" },
-      { x: 520, y: 180, w: 200, h: 60 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 400, h: 20 } ],
-    shiftDir: 1,
-    update: function() {
-      const sv1 = this.platforms.find(p => p.id === "sv1");
-      const sv2 = this.platforms.find(p => p.id === "sv2");
-      if (sv1 && sv2) {
-        sv1.x += (this.shiftDir || 1) * 1.2;
-        sv2.x -= (this.shiftDir || 1) * 1.2;
-        if (sv1.x > 260) this.shiftDir = -1;
-        if (sv1.x < 180) this.shiftDir = 1;
-      }
-    }
-  },
-
-  // Level 62: False Landing Pad
-  {
-    id: 62,
-    name: "Ghost Platform",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 160, h: 48 },
-      { x: 260, y: 200, w: 100, h: 20, id: "ghost62" },
-      { x: 460, y: 220, w: 260, h: 48 }
-    ],
-    hazards: [ { x: 160, y: 255, w: 300, h: 20 } ],
-    update: function(player) {
-      const g = this.platforms.find(p => p.id === "ghost62");
-      if (g && player.x > 240) {
-        g.y = -600;
-      }
-    }
-  },
-
-  // Level 63: Rapid Pulser Laser
-  {
-    id: 63,
-    name: "Pulse Frequency",
+    name: "Shaking Camera Bridge",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 300, y: 50, w: 20, h: 170, id: "pulse1" },
-      { x: 460, y: 50, w: 20, h: 170, id: "pulse2" }
-    ],
-    pCount: 0,
-    update: function() {
-      this.pCount = (this.pCount || 0) + 1;
-      const p1 = this.hazards.find(h => h.id === "pulse1");
-      const p2 = this.hazards.find(h => h.id === "pulse2");
-      if (p1 && p2) {
-        p1.y = (Math.floor(this.pCount / 35) % 2 === 0) ? 50 : -400;
-        p2.y = (Math.floor(this.pCount / 35) % 2 !== 0) ? 50 : -400;
-      }
-    }
-  },
-
-  // Level 64: Falling Bridge Chain
-  {
-    id: 64,
-    name: "Falling Line",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 100, h: 48 },
-      { x: 130, y: 220, w: 80, h: 48, id: "fChain1" },
-      { x: 240, y: 220, w: 80, h: 48, id: "fChain2" },
-      { x: 350, y: 220, w: 80, h: 48, id: "fChain3" },
-      { x: 460, y: 220, w: 80, h: 48, id: "fChain4" },
-      { x: 570, y: 220, w: 150, h: 48 }
-    ],
-    hazards: [ { x: 100, y: 260, w: 470, h: 20 } ],
-    update: function(player) {
-      ['fChain1', 'fChain2', 'fChain3', 'fChain4'].forEach(id => {
-        const p = this.platforms.find(item => item.id === id);
-        if (p && player.x > p.x && player.x < p.x + p.w && p.y < 280) {
-          p.y += 3.5;
-        }
-      });
-    }
-  },
-
-  // Level 65: Inverted Wind Funnel
-  {
-    id: 65,
-    name: "Gale Force",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 260, h: 48 },
-      { x: 460, y: 220, w: 260, h: 48 }
-    ],
-    hazards: [ { x: 260, y: 255, w: 200, h: 20 } ],
-    update: function(player) {
-      if (player.x > 200 && player.x < 480) {
-        player.x -= 2.2;
-      }
-    }
-  },
-
-  // Level 66: Ceiling Spikes Drop
-  {
-    id: 66,
-    name: "Cave Collapse",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 220, y: -40, w: 30, h: 40, id: "cSpike1" },
-      { x: 400, y: -40, w: 30, h: 40, id: "cSpike2" }
-    ],
-    update: function(player) {
-      const c1 = this.hazards.find(h => h.id === "cSpike1");
-      const c2 = this.hazards.find(h => h.id === "cSpike2");
-      if (c1 && player.x > 180 && c1.y < 190) c1.y += 14;
-      if (c2 && player.x > 360 && c2.y < 190) c2.y += 14;
-    }
-  },
-
-  // Level 67: Sinking Stepping Stones
-  {
-    id: 67,
-    name: "Quick Sand Steps",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 120, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 180, y: 200, w: 70, h: 20, id: "qs1" },
-      { x: 300, y: 180, w: 70, h: 20, id: "qs2" },
-      { x: 420, y: 160, w: 70, h: 20, id: "qs3" },
-      { x: 530, y: 180, w: 190, h: 60 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 410, h: 20 } ],
-    update: function(player) {
-      ['qs1', 'qs2', 'qs3'].forEach(id => {
-        const p = this.platforms.find(item => item.id === id);
-        if (p && player.x > p.x && player.x < p.x + p.w && p.y < 250) {
-          p.y += 1.5;
-        }
-      });
-    }
-  },
-
-  // Level 68: The Decoy Exit
-  {
-    id: 68,
-    name: "Wrong Turn",
-    spawn: { x: 40, y: 150 },
-    door: { x: 50, y: 80, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 0, y: 140, w: 120, h: 20 }
-    ],
-    hazards: [
-      { x: 620, y: 180, w: 40, h: 40 }
-    ],
-    update: function() {}
-  },
-
-  // Level 69: The Dual Blade Churn
-  {
-    id: 69,
-    name: "Buzzsaw Alley",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 300, y: 185, w: 30, h: 35, id: "saw1" },
-      { x: 460, y: 185, w: 30, h: 35, id: "saw2" }
-    ],
-    sawTick: 0,
-    update: function() {
-      this.sawTick = (this.sawTick || 0) + 0.06;
-      const s1 = this.hazards.find(h => h.id === "saw1");
-      const s2 = this.hazards.find(h => h.id === "saw2");
-      if (s1 && s2) {
-        s1.x = 300 + Math.sin(this.sawTick) * 40;
-        s2.x = 460 + Math.cos(this.sawTick) * 40;
-      }
-    }
-  },
-
-  // Level 70: Zone 7 Master Troll
-  {
-    id: 70,
-    name: "The Grand Illusion",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 140, h: 48 },
-      { x: 220, y: 200, w: 80, h: 20, id: "il1" },
-      { x: 380, y: 170, w: 80, h: 20, id: "il2" },
-      { x: 520, y: 190, w: 200, h: 60 }
+      { x: 200, y: 210, w: 70, h: 20, id: "shk1" },
+      { x: 330, y: 200, w: 70, h: 20, id: "shk2" },
+      { x: 460, y: 190, w: 70, h: 20, id: "shk3" },
+      { x: 570, y: 220, w: 150, h: 48 }
     ],
+    hazards: [ { x: 140, y: 260, w: 430, h: 20 } ],
+    shkTick: 0,
+    update: function(player) {
+      this.shkTick = (this.shkTick || 0) + 1;
+      const s1 = this.platforms.find(p => p.id === "shk1");
+      const s2 = this.platforms.find(p => p.id === "shk2");
+      // Violent tremors jittering platforms
+      if (s1) s1.y = 210 + Math.sin(this.shkTick * 0.4) * 12;
+      if (s2) s2.y = 200 + Math.cos(this.shkTick * 0.4) * 12;
+    }
+  },
+
+  // Level 60: Key Combination Chaos (Multi-lock trap gate)
+  {
+    id: 60,
+    name: "Key Combination Chaos",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
     hazards: [
-      { x: 140, y: 255, w: 380, h: 20 },
-      { x: 740, y: 145, w: 25, h: 15, id: "shell70" }
+      { x: 260, y: 195, w: 25, h: 25, id: "fakeLockKey" },
+      { x: 420, y: 195, w: 25, h: 25 }
     ],
     update: function(player) {
-      const il1 = this.platforms.find(p => p.id === "il1");
-      if (il1 && player.x > 200 && il1.y < 230) il1.y += 0.8;
-      const s = this.hazards.find(h => h.id === "shell70");
-      if (s) {
-        s.x -= 4.4;
-        if (s.x < -30) s.x = 740;
+      const k = this.hazards.find(h => h.id === "fakeLockKey");
+      if (k && player.x > 240) {
+        k.w = 50; // Wrong key explodes hazard area
       }
     }
   },
-             // ==========================================
-  // PART 8: LEVELS 71 - 80
+                 // ==========================================
+  // WORLD 4: CAMERA & VISUAL TROLLS (LEVELS 61 - 70)
   // ==========================================
 
-  // Level 71: Rapid Rocket Alley
+  // Level 61: Upside Down World (Flipped vertical layout)
   {
-    id: 71,
-    name: "Rocket Alley",
+    id: 61,
+    name: "Upside Down World",
     spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 740, y: 175, w: 25, h: 15, id: "rkt1" },
-      { x: 900, y: 175, w: 25, h: 15, id: "rkt2" }
-    ],
-    update: function() {
-      const r1 = this.hazards.find(h => h.id === "rkt1");
-      const r2 = this.hazards.find(h => h.id === "rkt2");
-      if (r1) {
-        r1.x -= 5.5;
-        if (r1.x < -30) r1.x = 740;
-      }
-      if (r2) {
-        r2.x -= 5.5;
-        if (r2.x < -30) r2.x = 740;
-      }
-    }
-  },
-
-  // Level 72: Vanishing Steps of Doom
-  {
-    id: 72,
-    name: "Phantom Stairway",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 110, w: 36, h: 60 },
+    door: { x: 630, y: 70, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 180, y: 195, w: 75, h: 20, id: "pst1" },
-      { x: 300, y: 170, w: 75, h: 20, id: "pst2" },
-      { x: 420, y: 145, w: 75, h: 20, id: "pst3" },
-      { x: 530, y: 170, w: 190, h: 80 }
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 240, y: 130, w: 100, h: 20 },
+      { x: 400, y: 90, w: 100, h: 20 },
+      { x: 540, y: 130, w: 180, h: 48 }
     ],
-    hazards: [ { x: 120, y: 255, w: 410, h: 20 } ],
-    update: function(player) {
-      const p2 = this.platforms.find(p => p.id === "pst2");
-      if (p2 && player.x > 260) {
-        p2.y = -600; // Middle step gayab ho jata hai
-      }
-    }
-  },
-
-  // Level 73: The Guillotine Drop II
-  {
-    id: 73,
-    name: "Iron Jaw",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 320, y: -50, w: 40, h: 100, id: "ironJaw1" },
-      { x: 480, y: -50, w: 40, h: 100, id: "ironJaw2" }
-    ],
-    update: function(player) {
-      const j1 = this.hazards.find(h => h.id === "ironJaw1");
-      const j2 = this.hazards.find(h => h.id === "ironJaw2");
-      if (j1 && player.x > 240 && j1.y < 120) j1.y += 18;
-      if (j2 && player.x > 400 && j2.y < 120) j2.y += 18;
-    }
-  },
-
-  // Level 74: Conveyor Into Spikes
-  {
-    id: 74,
-    name: "Conveyor Trap",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [ { x: 500, y: 195, w: 40, h: 25 } ],
-    update: function(player) {
-      if (player.x > 150 && player.x < 500) {
-        player.x += 1.6; // Tez speed se spikes ki taraf dhakelta hai
-      }
-    }
-  },
-
-  // Level 75: Backwards Run
-  {
-    id: 75,
-    name: "Mirror Dimension",
-    spawn: { x: 600, y: 150 },
-    door: { x: 40, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 260, h: 48 },
-      { x: 380, y: 220, w: 340, h: 48 }
-    ],
-    hazards: [ { x: 260, y: 255, w: 120, h: 20 } ],
+    hazards: [ { x: 180, y: 260, w: 360, h: 20 } ],
     update: function() {}
   },
 
-  // Level 76: Descending Sky Crusher
+  // Level 62: Zoom In Panic (Blind short-range hazards)
   {
-    id: 76,
-    name: "Falling Ceiling",
+    id: 62,
+    name: "Zoom In Panic",
     spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: 280, y: 195, w: 30, h: 25, id: "hiddenCloser1" },
+      { x: 450, y: 195, w: 30, h: 25, id: "hiddenCloser2" }
+    ],
+    update: function(player) {
+      const h1 = this.hazards.find(h => h.id === "hiddenCloser1");
+      const h2 = this.hazards.find(h => h.id === "hiddenCloser2");
+      // Sirf close range pe reveal honge
+      if (h1) h1.hidden = (Math.abs(player.x - h1.x) > 80);
+      if (h2) h2.hidden = (Math.abs(player.x - h2.x) > 80);
+    }
+  },
+
+  // Level 63: Cinematic Bars Crush (Squeezing boundary bars)
+  {
+    id: 63,
+    name: "Cinematic Bars Crush",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 720, h: 48 },
-      { x: 200, y: 40, w: 320, h: 40, id: "crush76" }
+      { x: 0, y: -100, w: 720, h: 80, id: "topBarCrush" }
     ],
     hazards: [],
     update: function(player) {
-      const c = this.platforms.find(p => p.id === "crush76");
-      if (c && player.x > 180 && c.y < 155) {
-        c.y += 1.2;
+      const bar = this.platforms.find(p => p.id === "topBarCrush");
+      // Center me aate hi cinematic black bar crashes downwards
+      if (bar && player.x > 200 && bar.y < 80) {
+        bar.y += 2.5;
       }
     }
   },
 
-  // Level 77: Staggered Laser Grid
+  // Level 64: Fake Dead Pixels (Disguised stationary traps)
   {
-    id: 77,
-    name: "Laser Grid",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 260, y: 50, w: 18, h: 170, id: "gridL1" },
-      { x: 420, y: 50, w: 18, h: 170, id: "gridL2" },
-      { x: 560, y: 50, w: 18, h: 170, id: "gridL3" }
-    ],
-    gridTick: 0,
-    update: function() {
-      this.gridTick = (this.gridTick || 0) + 1;
-      const l1 = this.hazards.find(h => h.id === "gridL1");
-      const l2 = this.hazards.find(h => h.id === "gridL2");
-      const l3 = this.hazards.find(h => h.id === "gridL3");
-      const state = Math.floor(this.gridTick / 30) % 3;
-      if (l1) l1.y = (state === 0) ? 50 : -400;
-      if (l2) l2.y = (state === 1) ? 50 : -400;
-      if (l3) l3.y = (state === 2) ? 50 : -400;
-    }
-  },
-
-  // Level 78: Bouncy Trap Pad
-  {
-    id: 78,
-    name: "Springboard Betrayal",
+    id: 64,
+    name: "Fake Dead Pixels",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 280, y: 215, w: 50, h: 15, id: "bPad78" },
+      { x: 0, y: 220, w: 220, h: 48 },
+      { x: 300, y: 200, w: 100, h: 20 },
       { x: 480, y: 220, w: 240, h: 48 }
     ],
     hazards: [
-      { x: 140, y: 255, w: 340, h: 20 },
-      { x: 270, y: 30, w: 70, h: 25 }
-    ],
-    update: function(player) {
-      const pad = this.platforms.find(p => p.id === "bPad78");
-      if (pad && player.x > pad.x - 5 && player.x < pad.x + pad.w + 5 && Math.abs(player.y - (pad.y - 20)) < 10) {
-        player.vy = -17; // Jump se ceiling spike me lagta hai
-      }
-    }
-  },
-
-  // Level 79: Shrinking Platforms Gauntlet
-  {
-    id: 79,
-    name: "Erosion",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 120, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 200, y: 190, w: 100, h: 20, id: "ero1" },
-      { x: 360, y: 170, w: 100, h: 20, id: "ero2" },
-      { x: 520, y: 180, w: 200, h: 60 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 400, h: 20 } ],
-    update: function(player) {
-      ['ero1', 'ero2'].forEach(id => {
-        const p = this.platforms.find(item => item.id === id);
-        if (p && player.x > p.x && player.x < p.x + p.w && p.w > 20) {
-          p.w -= 0.5;
-          p.x += 0.25;
-        }
-      });
-    }
-  },
-
-  // Level 80: Boss Chamber 8
-  {
-    id: 80,
-    name: "The Dual Turret",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 220, y: 200, w: 80, h: 20 },
-      { x: 380, y: 170, w: 80, h: 20 },
-      { x: 520, y: 190, w: 200, h: 60 }
-    ],
-    hazards: [
-      { x: 140, y: 255, w: 380, h: 20 },
-      { x: 740, y: 180, w: 25, h: 15, id: "b80Low" },
-      { x: 740, y: 120, w: 25, h: 15, id: "b80High" }
-    ],
-    update: function() {
-      const b1 = this.hazards.find(h => h.id === "b80Low");
-      const b2 = this.hazards.find(h => h.id === "b80High");
-      if (b1) {
-        b1.x -= 4.6;
-        if (b1.x < -30) b1.x = 740;
-      }
-      if (b2) {
-        b2.x -= 3.8;
-        if (b2.x < -30) b2.x = 740;
-      }
-    }
-  },
-            // ==========================================
-  // PART 9: LEVELS 81 - 90
-  // ==========================================
-
-  // Level 81: High Altitude Leap
-  {
-    id: 81,
-    name: "Sky Bound",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 80, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 260, y: 160, w: 60, h: 20 },
-      { x: 440, y: 120, w: 60, h: 20 },
-      { x: 560, y: 140, w: 160, h: 100 }
-    ],
-    hazards: [ { x: 140, y: 255, w: 420, h: 20 } ],
-    update: function() {}
-  },
-
-  // Level 82: The Fast Faller
-  {
-    id: 82,
-    name: "Panic Drop",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 140, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 190, y: 200, w: 75, h: 20, id: "drop82_1" },
-      { x: 330, y: 180, w: 75, h: 20, id: "drop82_2" },
-      { x: 470, y: 160, w: 75, h: 20, id: "drop82_3" },
-      { x: 570, y: 200, w: 150, h: 50 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 450, h: 20 } ],
-    update: function(player) {
-      ['drop82_1', 'drop82_2', 'drop82_3'].forEach(id => {
-        const p = this.platforms.find(item => item.id === id);
-        if (p && player.x > p.x - 5 && player.x < p.x + p.w + 5 && p.y < 280) {
-          p.y += 2.8;
-        }
-      });
-    }
-  },
-
-  // Level 83: Rolling Spikes Barrage
-  {
-    id: 83,
-    name: "Spike Wheels",
-    spawn: { x: 40, y: 150 },
-    door: { x: 640, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 740, y: 180, w: 35, h: 35, id: "wheel83" }
-    ],
-    update: function(player) {
-      const w = this.hazards.find(h => h.id === "wheel83");
-      if (w) {
-        w.x -= 4.2;
-        if (w.x < -40) w.x = 740;
-      }
-    }
-  },
-
-  // Level 84: Squeeze Tunnel
-  {
-    id: 84,
-    name: "Tight Squeeze",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 220, y: 90, w: 300, h: 35 }
-    ],
-    hazards: [
-      { x: 340, y: 205, w: 35, h: 15 }
+      { x: 220, y: 255, w: 260, h: 20 },
+      { x: 340, y: 175, w: 18, h: 25, id: "deadPixelTrap" }
     ],
     update: function() {}
   },
 
-  // Level 85: The Glitch Teleport
+  // Level 65: Color Blind Mode (Disappearing flat monochrome steps)
   {
-    id: 85,
-    name: "Warp Point",
+    id: 65,
+    name: "Color Blind Mode",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [ { x: 460, y: 195, w: 40, h: 25 } ],
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 220, w: 100, h: 48, id: "monoTrap" },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 260, w: 280, h: 20 } ],
     update: function(player) {
-      if (player.x > 340 && player.x < 350) {
-        player.x = 220; // Troll loop
+      const m = this.platforms.find(p => p.id === "monoTrap");
+      if (m && player.x > 240 && m.y < 350) {
+        m.y += 5; // Instant trap fall
       }
     }
   },
 
-  // Level 86: Moving Ceiling Spikes
+  // Level 66: Rotating Camera Lens (Continuous centrifugal pull)
   {
-    id: 86,
-    name: "Descending Roof",
+    id: 66,
+    name: "Rotating Camera Lens",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 720, h: 48 },
-      { x: 240, y: 50, w: 260, h: 30, id: "roof86" }
+      { x: 0, y: 220, w: 160, h: 48 },
+      { x: 240, y: 190, w: 100, h: 20 },
+      { x: 420, y: 170, w: 100, h: 20 },
+      { x: 560, y: 220, w: 160, h: 48 }
     ],
-    hazards: [],
+    hazards: [ { x: 160, y: 255, w: 400, h: 20 } ],
+    lensTick: 0,
     update: function(player) {
-      const r = this.platforms.find(p => p.id === "roof86");
-      if (r && player.x > 220 && r.y < 150) {
-        r.y += 0.8;
-      }
+      this.lensTick = (this.lensTick || 0) + 1;
+      // Rotational wobble drift
+      player.x += Math.sin(this.lensTick * 0.08) * 1.6;
     }
   },
 
-  // Level 87: Oscillating Island Gap
+  // Level 67: Screen Blur Shock (Jump apex momentum disruption)
   {
-    id: 87,
-    name: "Oscillator",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 240, y: 190, w: 80, h: 20, id: "osc87" },
-      { x: 480, y: 190, w: 240, h: 60 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 360, h: 20 } ],
-    oscDir: 1,
-    update: function() {
-      const o = this.platforms.find(p => p.id === "osc87");
-      if (o) {
-        o.x += (this.oscDir || 1) * 1.5;
-        if (o.x > 360) this.oscDir = -1;
-        if (o.x < 220) this.oscDir = 1;
-      }
-    }
-  },
-
-  // Level 88: Fake Door Ambush
-  {
-    id: 88,
-    name: "Troll Haven",
-    spawn: { x: 40, y: 150 },
-    door: { x: 30, y: 160, w: 36, h: 60 }, // Door is at spawn
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 590, y: 170, w: 45, h: 50 } // Fake door location trap
-    ],
-    update: function() {}
-  },
-
-  // Level 89: Triple Blade Sweep
-  {
-    id: 89,
-    name: "Triple Blades",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [
-      { x: 260, y: 185, w: 25, h: 35, id: "tb1" },
-      { x: 380, y: 185, w: 25, h: 35, id: "tb2" },
-      { x: 500, y: 185, w: 25, h: 35, id: "tb3" }
-    ],
-    tbAngle: 0,
-    update: function() {
-      this.tbAngle = (this.tbAngle || 0) + 0.05;
-      const b1 = this.hazards.find(h => h.id === "tb1");
-      const b2 = this.hazards.find(h => h.id === "tb2");
-      const b3 = this.hazards.find(h => h.id === "tb3");
-      if (b1) b1.x = 260 + Math.sin(this.tbAngle) * 30;
-      if (b2) b2.x = 380 + Math.sin(this.tbAngle + 1) * 30;
-      if (b3) b3.x = 500 + Math.sin(this.tbAngle + 2) * 30;
-    }
-  },
-
-  // Level 90: Sector 9 Boss Trap
-  {
-    id: 90,
-    name: "Bullet Hell Alley",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 140, h: 48 },
-      { x: 240, y: 190, w: 80, h: 20 },
-      { x: 400, y: 160, w: 80, h: 20 },
-      { x: 540, y: 180, w: 180, h: 60 }
-    ],
-    hazards: [
-      { x: 140, y: 255, w: 400, h: 20 },
-      { x: 740, y: 155, w: 25, h: 15, id: "b90" }
-    ],
-    update: function() {
-      const b = this.hazards.find(h => h.id === "b90");
-      if (b) {
-        b.x -= 5.0;
-        if (b.x < -30) b.x = 740;
-      }
-    }
-  },
-    // ==========================================
-  // PART 10: LEVELS 91 - 100 (THE GRAND FINALE)
-  // ==========================================
-
-  // Level 91: The Gravity Flip Illusion
-  {
-    id: 91,
-    name: "Anti-Climax",
+    id: 67,
+    name: "Screen Blur Shock",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 200, h: 48 },
-      { x: 480, y: 220, w: 240, h: 48 }
+      { x: 300, y: 200, w: 100, h: 20 },
+      { x: 500, y: 220, w: 220, h: 48 }
     ],
-    hazards: [ { x: 200, y: 255, w: 280, h: 20 } ],
-    update: function(player) {
-      if (player.x > 240 && player.x < 440) {
-        player.y -= 1.2; // Float trap towards top ceiling
+    hazards: [ { x: 200, y: 255, w: 300, h: 20 } ],
+    update: function(player, input) {
+      // Jump lete hi velocity forward flip/stutter
+      if (input && input.jump && player.y < 180) {
+        player.x -= 0.8;
       }
     }
   },
 
-  // Level 92: Crumbling Skyways
+  // Level 68: Mirror Image Illusion (Fake double hazards)
   {
-    id: 92,
-    name: "Skyway Collapse",
-    spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 100, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 100, h: 48 },
-      { x: 160, y: 190, w: 60, h: 20, id: "skc1" },
-      { x: 280, y: 165, w: 60, h: 20, id: "skc2" },
-      { x: 400, y: 140, w: 60, h: 20, id: "skc3" },
-      { x: 520, y: 160, w: 200, h: 80 }
-    ],
-    hazards: [ { x: 100, y: 255, w: 420, h: 20 } ],
-    update: function(player) {
-      ['skc1', 'skc2', 'skc3'].forEach(id => {
-        const p = this.platforms.find(item => item.id === id);
-        if (p && player.x > p.x - 5 && player.x < p.x + p.w + 5 && p.y < 280) {
-          p.y += 3.0;
-        }
-      });
-    }
-  },
-
-  // Level 93: Laser Crossfire
-  {
-    id: 93,
-    name: "Crossfire",
+    id: 68,
+    name: "Mirror Image Illusion",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
     hazards: [
-      { x: 250, y: 50, w: 18, h: 170, id: "cf1" },
-      { x: 450, y: 50, w: 18, h: 170, id: "cf2" }
+      { x: 280, y: 195, w: 30, h: 25 },
+      { x: 460, y: 195, w: 30, h: 25, id: "mirrorHazard68" }
     ],
-    cfTick: 0,
-    update: function() {
-      this.cfTick = (this.cfTick || 0) + 1;
-      const c1 = this.hazards.find(h => h.id === "cf1");
-      const c2 = this.hazards.find(h => h.id === "cf2");
-      if (c1 && c2) {
-        c1.y = (Math.floor(this.cfTick / 35) % 2 === 0) ? 50 : -400;
-        c2.y = (Math.floor(this.cfTick / 35) % 2 !== 0) ? 50 : -400;
+    update: function(player) {
+      const mh = this.hazards.find(h => h.id === "mirrorHazard68");
+      // Real hazard mirror shifts as player moves
+      if (mh && player.x > 320 && mh.x > 360) {
+        mh.x -= 1.8;
       }
     }
   },
 
-  // Level 94: Slippery Wind Tunnel
+  // Level 69: VHS Glitch Effect (Horizontal frame displacement)
   {
-    id: 94,
-    name: "Blizzard Rush",
+    id: 69,
+    name: "VHS Glitch Effect",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [ { x: 380, y: 195, w: 35, h: 25 } ],
-    update: function(player) {
-      if (player.x > 140 && player.x < 500) {
-        player.x += 1.8; // Heavy storm push
+    platforms: [
+      { x: 0, y: 220, w: 150, h: 48 },
+      { x: 240, y: 200, w: 110, h: 20, id: "vhsPlat" },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 150, y: 255, w: 310, h: 20 } ],
+    vhsTick: 0,
+    update: function() {
+      this.vhsTick = (this.vhsTick || 0) + 1;
+      const vp = this.platforms.find(p => p.id === "vhsPlat");
+      // Dynamic shift glitch
+      if (vp && this.vhsTick % 30 === 0) {
+        vp.x = (vp.x === 240) ? 290 : 240;
       }
     }
   },
 
-  // Level 95: Disappearing Destination
+  // Level 70: Flashbang Flash (Bright white blind bar dropping down)
   {
-    id: 95,
-    name: "Ghost Goal",
+    id: 70,
+    name: "Flashbang Flash",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      { x: 300, y: -200, w: 180, h: 220, id: "flashBlock70" }
+    ],
+    hazards: [ { x: 360, y: 195, w: 35, h: 25 } ],
+    update: function(player) {
+      const fb = this.platforms.find(p => p.id === "flashBlock70");
+      if (fb && player.x > 220 && fb.y < 20) {
+        fb.y += 20; // Sudden flash blind drop
+      }
+    }
+  },
+                  // Level 71: Screen Melting Trap (Melting visual illusion, static actual collider)
+  {
+    id: 71,
+    name: "Screen Melting Trap",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 200, w: 120, h: 20, id: "meltIllusion" },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 260, w: 300, h: 20 } ],
+    meltTick: 0,
+    update: function() {
+      this.meltTick = (this.meltTick || 0) + 1;
+      const m = this.platforms.find(p => p.id === "meltIllusion");
+      if (m) {
+        m.h = 20 + Math.sin(this.meltTick * 0.1) * 6;
+      }
+    }
+  },
+
+  // Level 72: Deep Fog Mystery (Tight visibility blind dash)
+  {
+    id: 72,
+    name: "Deep Fog Mystery",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 160, h: 48 },
-      { x: 260, y: 200, w: 100, h: 20, id: "ghost95" },
-      { x: 480, y: 220, w: 240, h: 48 }
+      { x: 240, y: 200, w: 90, h: 20, id: "fogStep1" },
+      { x: 400, y: 180, w: 90, h: 20, id: "fogStep2" },
+      { x: 550, y: 220, w: 170, h: 48 }
     ],
-    hazards: [ { x: 160, y: 255, w: 320, h: 20 } ],
+    hazards: [ { x: 160, y: 260, w: 390, h: 20 } ],
     update: function(player) {
-      const g = this.platforms.find(p => p.id === "ghost95");
-      if (g && player.x > 230) {
-        g.y = -600;
+      const f1 = this.platforms.find(p => p.id === "fogStep1");
+      const f2 = this.platforms.find(p => p.id === "fogStep2");
+      if (f1) f1.hidden = (Math.abs(player.x - f1.x) > 70);
+      if (f2) f2.hidden = (Math.abs(player.x - f2.x) > 70);
+    }
+  },
+
+  // Level 73: Fake Error Message (Background rolling hazard)
+  {
+    id: 73,
+    name: "Fake Error Message",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      { x: 220, y: 60, w: 280, h: 140, id: "fakeErrorPopup" } // Massive error window
+    ],
+    hazards: [
+      { x: 740, y: 190, w: 35, h: 30, id: "rollingStone73" }
+    ],
+    update: function(player) {
+      const stone = this.hazards.find(h => h.id === "rollingStone73");
+      if (stone && player.x > 120) {
+        stone.x -= 4.2;
       }
     }
   },
 
-  // Level 96: Ceiling Dropper Rush
+  // Level 74: Font Distortion Mess (Jittering symbol blocks)
   {
-    id: 96,
-    name: "Falling Slabs",
+    id: 74,
+    name: "Font Distortion Mess",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 150, h: 48 },
+      { x: 220, y: 200, w: 110, h: 20, id: "fontBlock1" },
+      { x: 400, y: 200, w: 110, h: 20, id: "fontBlock2" },
+      { x: 570, y: 220, w: 150, h: 48 }
+    ],
+    hazards: [ { x: 150, y: 260, w: 420, h: 20 } ],
+    fTick: 0,
+    update: function() {
+      this.fTick = (this.fTick || 0) + 1;
+      const b1 = this.platforms.find(p => p.id === "fontBlock1");
+      const b2 = this.platforms.find(p => p.id === "fontBlock2");
+      if (b1) b1.w = 110 + Math.sin(this.fTick * 0.2) * 15;
+      if (b2) b2.x = 400 + Math.cos(this.fTick * 0.2) * 15;
+    }
+  },
+
+  // Level 75: Static Cam Detach (Blind off-screen run)
+  {
+    id: 75,
+    name: "Static Cam Detach",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 300, h: 48 },
+      { x: 420, y: 220, w: 300, h: 48 }
+    ],
+    hazards: [ { x: 300, y: 260, w: 120, h: 20 } ],
+    update: function(player) {
+      if (player.x > 320 && player.x < 460) {
+        player.hidden = true; // Offscreen blind leap
+      } else {
+        player.hidden = false;
+      }
+    }
+  },
+
+  // Level 76: Disco Light Blindness (High speed projectile in flash intervals)
+  {
+    id: 76,
+    name: "Disco Light Blindness",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
     hazards: [
-      { x: 280, y: -40, w: 35, h: 60, id: "slab1" },
-      { x: 460, y: -40, w: 35, h: 60, id: "slab2" }
+      { x: 740, y: 185, w: 25, h: 35, id: "discoBullet" }
     ],
     update: function(player) {
-      const s1 = this.hazards.find(h => h.id === "slab1");
-      const s2 = this.hazards.find(h => h.id === "slab2");
-      if (s1 && player.x > 220 && s1.y < 160) s1.y += 15;
-      if (s2 && player.x > 400 && s2.y < 160) s2.y += 15;
-    }
-  },
-
-  // Level 97: Oscillating Twin Bridges
-  {
-    id: 97,
-    name: "Sync or Sink",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 130, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 200, y: 190, w: 75, h: 20, id: "sync1" },
-      { x: 380, y: 190, w: 75, h: 20, id: "sync2" },
-      { x: 520, y: 190, w: 200, h: 60 }
-    ],
-    hazards: [ { x: 120, y: 255, w: 400, h: 20 } ],
-    syncTick: 0,
-    update: function() {
-      this.syncTick = (this.syncTick || 0) + 0.05;
-      const s1 = this.platforms.find(p => p.id === "sync1");
-      const s2 = this.platforms.find(p => p.id === "sync2");
-      if (s1) s1.y = 190 + Math.sin(this.syncTick) * 25;
-      if (s2) s2.y = 190 + Math.cos(this.syncTick) * 25;
-    }
-  },
-
-  // Level 98: High Tension Gap
-  {
-    id: 98,
-    name: "Penultimate Leap",
-    spawn: { x: 40, y: 150 },
-    door: { x: 630, y: 110, w: 36, h: 60 },
-    platforms: [
-      { x: 0, y: 220, w: 110, h: 48 },
-      { x: 180, y: 190, w: 60, h: 20 },
-      { x: 300, y: 165, w: 60, h: 20 },
-      { x: 420, y: 140, w: 60, h: 20 },
-      { x: 530, y: 160, w: 190, h: 80 }
-    ],
-    hazards: [ { x: 110, y: 255, w: 420, h: 20 } ],
-    update: function() {}
-  },
-
-  // Level 99: The Ultimate Troll (Door flees back to spawn)
-  {
-    id: 99,
-    name: "Psychological Damage",
-    spawn: { x: 40, y: 150 },
-    door: { x: 600, y: 160, w: 36, h: 60 },
-    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
-    hazards: [],
-    update: function(player) {
-      if (player.x > 450 && this.door.x > 80) {
-        this.door.x -= 8; // Player aage aate hi door peeche bhagega
+      const b = this.hazards.find(h => h.id === "discoBullet");
+      if (b && player.x > 100) {
+        b.x -= 6.5;
+        if (b.x < -30) b.x = 740;
       }
     }
   },
 
-  // Level 100: Grand Finale Trophy Arena
+  // Level 77: Upside Down Reflection (Real traps render below)
   {
-    id: 100,
-    name: "VORTEX CONQUEROR",
+    id: 77,
+    name: "Upside Down Reflection",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 280, y: 220, w: 120, h: 48, id: "waterFallTile" },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [ { x: 200, y: 260, w: 280, h: 20 } ],
+    update: function(player) {
+      const w = this.platforms.find(p => p.id === "waterFallTile");
+      if (w && player.x > 270 && w.y < 350) {
+        w.y += 6;
+      }
+    }
+  },
+
+  // Level 78: Pixel Expansion Troll (Block expands 10x horizontally)
+  {
+    id: 78,
+    name: "Pixel Expansion Troll",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      { x: 380, y: 160, w: 20, h: 60, id: "expandingWall" }
+    ],
+    hazards: [],
+    update: function(player) {
+      const wall = this.platforms.find(p => p.id === "expandingWall");
+      if (wall && player.x > 260) {
+        if (wall.w < 160) {
+          wall.w += 5;
+          wall.x -= 3;
+        }
+      }
+    }
+  },
+
+  // Level 79: Negative Contrast Flip (Inverse safe path)
+  {
+    id: 79,
+    name: "Negative Contrast Flip",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 260, y: 200, w: 100, h: 20, id: "fakeSafeTile" },
+      { x: 440, y: 220, w: 280, h: 48 }
+    ],
+    hazards: [ { x: 200, y: 260, w: 240, h: 20 } ],
+    update: function(player) {
+      const fs = this.platforms.find(p => p.id === "fakeSafeTile");
+      if (fs && player.x > 250 && fs.y < 350) {
+        fs.y += 8;
+      }
+    }
+  },
+
+  // Level 80: Split Screen Illusion (Physics desync time step)
+  {
+    id: 80,
+    name: "Split Screen Illusion",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 160, h: 48 },
+      { x: 260, y: 190, w: 100, h: 20 },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 160, y: 260, w: 300, h: 20 } ],
+    splitTick: 0,
+    update: function(player) {
+      this.splitTick = (this.splitTick || 0) + 1;
+      if (player.x > 180 && player.x < 420) {
+        player.x += (this.splitTick % 2 === 0 ? 1 : -1) * 2;
+      }
+    }
+  },
+      // ==========================================
+  // WORLD 5: MATRIX GLITCHES (LEVELS 81 - 90)
+  // ==========================================
+
+  // Level 81: Zero Gravity Drift (Float up velocity dampening)
+  {
+    id: 81,
+    name: "Zero Gravity Drift",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 }
+    ],
+    hazards: [
+      { x: 180, y: 20, w: 360, h: 25 } // Ceiling hazard
+    ],
+    update: function(player, input) {
+      if (input && input.jump) {
+        player.vy -= 1.2; // Float up towards ceiling spikes
+      }
+    }
+  },
+
+  // Level 82: Wall Walk Glitch (Climbing narrow corridor walls)
+  {
+    id: 82,
+    name: "Wall Walk Glitch",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 90, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 170, w: 30, h: 100 },
+      { x: 380, y: 120, w: 30, h: 120 },
+      { x: 520, y: 160, w: 200, h: 48 }
+    ],
+    hazards: [
+      { x: 140, y: 260, w: 380, h: 20 }
+    ],
+    update: function() {}
+  },
+
+  // Level 83: Shadow Clone Attack (Trailing lethal shadow clone)
+  {
+    id: 83,
+    name: "Shadow Clone Attack",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: -50, y: 195, w: 20, h: 25, id: "shadowClone" }
+    ],
+    update: function(player) {
+      const clone = this.hazards.find(h => h.id === "shadowClone");
+      if (clone && player.x > 80) {
+        clone.x += (player.x - clone.x) * 0.04;
+      }
+    }
+  },
+
+  // Level 84: Infinity Loop Corridor (True exit hidden on left edge)
+  {
+    id: 84,
+    name: "Infinity Loop Corridor",
+    spawn: { x: 80, y: 150 },
+    door: { x: 10, y: 160, w: 36, h: 60 }, // Hidden at left boundary
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [],
+    update: function(player) {
+      // Loop warp if running right endlessly
+      if (player.x > 680) {
+        player.x = 120;
+      }
+    }
+  },
+
+  // Level 85: Matrix Code Fall (Dynamic dropping code stream tiles)
+  {
+    id: 85,
+    name: "Matrix Code Fall",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 150, h: 48 },
+      { x: 220, y: 190, w: 80, h: 20, id: "codePlat1" },
+      { x: 380, y: 170, w: 80, h: 20, id: "codePlat2" },
+      { x: 530, y: 220, w: 190, h: 48 }
+    ],
+    hazards: [ { x: 150, y: 260, w: 380, h: 20 } ],
+    codeTick: 0,
+    update: function() {
+      this.codeTick = (this.codeTick || 0) + 1;
+      const c1 = this.platforms.find(p => p.id === "codePlat1");
+      const c2 = this.platforms.find(p => p.id === "codePlat2");
+      if (c1) c1.y = 190 + Math.sin(this.codeTick * 0.15) * 20;
+      if (c2) c2.y = 170 + Math.cos(this.codeTick * 0.15) * 20;
+    }
+  },
+
+  // Level 86: Glitched Jump Height (Randomized jump power)
+  {
+    id: 86,
+    name: "Glitched Jump Height",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 200, w: 120, h: 20 },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 260, w: 280, h: 20 } ],
+    update: function(player, input) {
+      if (input && input.jump && player.vy < 0) {
+        player.vy *= (Math.random() > 0.5 ? 1.4 : 0.6); // Glitched velocity
+      }
+    }
+  },
+
+  // Level 87: Rewind Time Trap (Status rewinds position)
+  {
+    id: 87,
+    name: "Rewind Time Trap",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [ { x: 380, y: 195, w: 40, h: 25 } ],
+    rewindTimer: 0,
+    update: function(player) {
+      this.rewindTimer = (this.rewindTimer || 0) + 1;
+      // Har 180 frames par rewind jump back
+      if (this.rewindTimer % 180 === 0 && player.x > 200) {
+        player.x -= 100;
+      }
+    }
+  },
+
+  // Level 88: Invisible Matrix Path (Materialize on near touch)
+  {
+    id: 88,
+    name: "Invisible Matrix Path",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 210, w: 70, h: 20, hidden: true, id: "invisNode1" },
+      { x: 360, y: 200, w: 70, h: 20, hidden: true, id: "invisNode2" },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 260, w: 360, h: 20 } ],
+    update: function(player) {
+      const n1 = this.platforms.find(p => p.id === "invisNode1");
+      const n2 = this.platforms.find(p => p.id === "invisNode2");
+      if (n1 && Math.abs(player.x - n1.x) < 60) n1.hidden = false;
+      if (n2 && Math.abs(player.x - n2.x) < 60) n2.hidden = false;
+    }
+  },
+
+  // Level 89: Double Speed Desperation (2x hyper acceleration)
+  {
+    id: 89,
+    name: "Double Speed Desperation",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 280, y: 190, w: 80, h: 20 },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 200, y: 260, w: 260, h: 20 } ],
+    update: function(player, input) {
+      if (input && input.right) {
+        player.x += 4; // 2x Turbo dash
+      }
+    }
+  },
+
+  // Level 90: Fake Crash Loop (Blue alert override)
+  {
+    id: 90,
+    name: "Fake Crash Loop",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      { x: 180, y: 40, w: 360, h: 180, id: "fakeCrashBox" }
+    ],
+    hazards: [],
+    update: function(player) {
+      const box = this.platforms.find(p => p.id === "fakeCrashBox");
+      if (box && player.x > 300) {
+        box.y = -600; // Clears away once pushed through
+      }
+    }
+  },
+         // ==========================================
+  // WORLD 5: MATRIX GLITCHES (LEVELS 81 - 100)
+  // ==========================================
+
+  // Level 81: Zero Gravity Drift (Float upward into ceiling hazards)
+  {
+    id: 81,
+    name: "Zero Gravity Drift",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 300, y: 200, w: 100, h: 20 },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [
+      { x: 200, y: 255, w: 300, h: 20 },
+      { x: 260, y: 20, w: 200, h: 25 } // Ceiling spikes
+    ],
+    update: function(player, input) {
+      if (input && input.jump && player.y > 60) {
+        player.vy -= 1.8; // Antigravity float
+      }
+    }
+  },
+
+  // Level 82: Wall Walk Glitch (Wall projection hazards)
+  {
+    id: 82,
+    name: "Wall Walk Glitch",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 60, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 220, y: 160, w: 40, h: 120 },
+      { x: 380, y: 120, w: 40, h: 120 },
+      { x: 540, y: 120, w: 180, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 260, w: 360, h: 20 } ],
+    update: function() {}
+  },
+
+  // Level 83: Shadow Clone Attack (Clone chases previous steps)
+  {
+    id: 83,
+    name: "Shadow Clone Attack",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [
+      { x: -50, y: 195, w: 20, h: 25, id: "shadowClone" }
+    ],
+    update: function(player) {
+      const clone = this.hazards.find(h => h.id === "shadowClone");
+      if (clone && player.x > 80) {
+        clone.x += (player.x - clone.x) * 0.04;
+      }
+    }
+  },
+
+  // Level 84: Infinity Loop Corridor (Wrap-around illusion; walk left to win)
+  {
+    id: 84,
+    name: "Infinity Loop Corridor",
+    spawn: { x: 100, y: 150 },
+    door: { x: 20, y: 160, w: 36, h: 60 }, // Exit is actually behind at left
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [],
+    update: function(player) {
+      // Running right loops player back
+      if (player.x > 680) {
+        player.x = 80;
+      }
+    }
+  },
+
+  // Level 85: Matrix Code Fall (Falling floor stream)
+  {
+    id: 85,
+    name: "Matrix Code Fall",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 200, w: 70, h: 20, id: "codeBlock1" },
+      { x: 380, y: 200, w: 70, h: 20, id: "codeBlock2" },
+      { x: 540, y: 220, w: 180, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 260, w: 400, h: 20 } ],
+    codeTick: 0,
+    update: function() {
+      this.codeTick = (this.codeTick || 0) + 1;
+      const b1 = this.platforms.find(p => p.id === "codeBlock1");
+      const b2 = this.platforms.find(p => p.id === "codeBlock2");
+      if (b1) b1.y = 200 + Math.sin(this.codeTick * 0.1) * 18;
+      if (b2) b2.y = 200 + Math.cos(this.codeTick * 0.1) * 18;
+    }
+  },
+
+  // Level 86: Glitched Jump Height (Unstable vertical velocity)
+  {
+    id: 86,
+    name: "Glitched Jump Height",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 280, y: 200, w: 120, h: 20 },
+      { x: 480, y: 220, w: 240, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 255, w: 300, h: 20 } ],
+    update: function(player, input) {
+      if (input && input.jump && player.vy < -4) {
+        player.vy -= 1.2; // Extra crazy air boost
+      }
+    }
+  },
+
+  // Level 87: Rewind Time Trap (Periodic coordinate snapback)
+  {
+    id: 87,
+    name: "Rewind Time Trap",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [ { x: 380, y: 195, w: 40, h: 25 } ],
+    rewindTimer: 0,
+    update: function(player) {
+      this.rewindTimer = (this.rewindTimer || 0) + 1;
+      if (this.rewindTimer % 180 === 0 && player.x > 160) {
+        player.x -= 80; // Rewind snap
+      }
+    }
+  },
+
+  // Level 88: Invisible Matrix Path (Invisible bridges reveal on contact)
+  {
+    id: 88,
+    name: "Invisible Matrix Path",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 200, w: 100, h: 20, hidden: true, id: "invisMat1" },
+      { x: 400, y: 200, w: 100, h: 20, hidden: true, id: "invisMat2" },
+      { x: 560, y: 220, w: 160, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 260, w: 420, h: 20 } ],
+    update: function(player) {
+      const m1 = this.platforms.find(p => p.id === "invisMat1");
+      const m2 = this.platforms.find(p => p.id === "invisMat2");
+      if (m1 && player.x > 200) m1.hidden = false;
+      if (m2 && player.x > 380) m2.hidden = false;
+    }
+  },
+
+  // Level 89: Double Speed Desperation (2x hyper speed drift)
+  {
+    id: 89,
+    name: "Double Speed Desperation",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 300, y: 190, w: 100, h: 20 },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [ { x: 200, y: 255, w: 300, h: 20 } ],
+    update: function(player, input) {
+      if (input && input.right) player.x += 2.2;
+      if (input && input.left) player.x -= 2.2;
+    }
+  },
+
+  // Level 90: Fake Crash Loop (Blue alert window, keep walking forward)
+  {
+    id: 90,
+    name: "Fake Crash Loop",
     spawn: { x: 40, y: 150 },
     door: { x: 640, y: 160, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 720, h: 48 },
-      { x: 260, y: 140, w: 200, h: 25 } // Victor pedestal
+      { x: 180, y: 40, w: 360, h: 180, id: "bsodBox" }
     ],
     hazards: [],
     update: function() {}
+  },
+
+  // Level 91: Dimension Swap Portal (Active grid switches)
+  {
+    id: 91,
+    name: "Dimension Swap Portal",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 200, w: 100, h: 20, id: "dimPlatA" },
+      { x: 420, y: 180, w: 100, h: 20, id: "dimPlatB" },
+      { x: 580, y: 220, w: 140, h: 48 }
+    ],
+    hazards: [ { x: 180, y: 260, w: 400, h: 20 } ],
+    dimTick: 0,
+    update: function() {
+      this.dimTick = (this.dimTick || 0) + 1;
+      const pa = this.platforms.find(p => p.id === "dimPlatA");
+      const pb = this.platforms.find(p => p.id === "dimPlatB");
+      const phase = Math.floor(this.dimTick / 45) % 2;
+      if (pa) pa.hidden = (phase === 0);
+      if (pb) pb.hidden = (phase !== 0);
+    }
+  },
+
+  // Level 92: Clipping Glitch Danger (Corner clip void pit)
+  {
+    id: 92,
+    name: "Clipping Glitch Danger",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 220, h: 48 },
+      { x: 220, y: 220, w: 140, h: 48, id: "clipTile" },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [ { x: 360, y: 260, w: 100, h: 20 } ],
+    update: function(player) {
+      const ct = this.platforms.find(p => p.id === "clipTile");
+      if (ct && player.x > 240 && ct.y < 350) {
+        ct.y += 9; // Disintegrates on slide
+      }
+    }
+  },
+
+  // Level 93: Text String Platforms (Stepping on danger word triggers drop)
+  {
+    id: 93,
+    name: "Text String Platforms",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 160, h: 48 },
+      { x: 240, y: 200, w: 100, h: 20, id: "wordDrop" },
+      { x: 420, y: 200, w: 100, h: 20 },
+      { x: 560, y: 220, w: 160, h: 48 }
+    ],
+    hazards: [ { x: 160, y: 260, w: 400, h: 20 } ],
+    update: function(player) {
+      const wd = this.platforms.find(p => p.id === "wordDrop");
+      if (wd && player.x > 250 && wd.y < 340) {
+        wd.y += 4;
+      }
+    }
+  },
+
+  // Level 94: Tile Shifter Randomizer (Block positions relocate on jump)
+  {
+    id: 94,
+    name: "Tile Shifter Randomizer",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 240, y: 190, w: 90, h: 20, id: "shiftBlock" },
+      { x: 420, y: 190, w: 90, h: 20 },
+      { x: 560, y: 220, w: 160, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 260, w: 420, h: 20 } ],
+    didShift: false,
+    update: function(player, input) {
+      const sb = this.platforms.find(p => p.id === "shiftBlock");
+      if (input && input.jump && sb && !this.didShift) {
+        sb.x = 280; // Shifter snap
+        this.didShift = true;
+      }
+    }
+  },
+
+  // Level 95: Lag Teleportation Mesh (Jitter packet loss simulation)
+  {
+    id: 95,
+    name: "Lag Teleportation Mesh",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 200, h: 48 },
+      { x: 300, y: 200, w: 100, h: 20 },
+      { x: 500, y: 220, w: 220, h: 48 }
+    ],
+    hazards: [ { x: 200, y: 255, w: 300, h: 20 } ],
+    meshTick: 0,
+    update: function(player) {
+      this.meshTick = (this.meshTick || 0) + 1;
+      if (this.meshTick % 20 === 0 && player.x > 180 && player.x < 460) {
+        player.x += (Math.random() > 0.5 ? 8 : -8);
+      }
+    }
+  },
+
+  // Level 96: Low Poly Decimation (Extreme thin wireframe platforms)
+  {
+    id: 96,
+    name: "Low Poly Decimation",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 220, y: 200, w: 45, h: 10 },
+      { x: 360, y: 180, w: 45, h: 10 },
+      { x: 500, y: 160, w: 45, h: 10 },
+      { x: 600, y: 220, w: 120, h: 48 }
+    ],
+    hazards: [ { x: 140, y: 260, w: 460, h: 20 } ],
+    update: function() {}
+  },
+
+  // Level 97: Memory Leak Slowdown (Speed penalty, rush before frozen)
+  {
+    id: 97,
+    name: "Memory Leak Slowdown",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [ { x: 0, y: 220, w: 720, h: 48 } ],
+    hazards: [ { x: 380, y: 195, w: 30, h: 25 } ],
+    leakTimer: 0,
+    update: function(player) {
+      this.leakTimer = (this.leakTimer || 0) + 1;
+      if (this.leakTimer > 80 && player.vx !== 0) {
+        player.vx *= 0.94; // Incremental crawl
+      }
+    }
+  },
+
+  // Level 98: Corrupted Save State (Checkpoint trap)
+  {
+    id: 98,
+    name: "Corrupted Save State",
+    spawn: { x: 40, y: 150 },
+    door: { x: 630, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 260, h: 48 },
+      { x: 420, y: 220, w: 300, h: 48 }
+    ],
+    hazards: [
+      { x: 260, y: 255, w: 160, h: 20 },
+      { x: 210, y: 180, w: 25, h: 40, id: "corruptFlag" }
+    ],
+    update: function(player) {
+      const f = this.hazards.find(h => h.id === "corruptFlag");
+      if (f && player.x > 190) {
+        f.w = 60; // Flag explodes hazard radius
+      }
+    }
+  },
+
+  // Level 99: Developer Console Override (Code block obstructions)
+  {
+    id: 99,
+    name: "Developer Console Override",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 720, h: 48 },
+      { x: 260, y: -200, w: 200, h: 220, id: "consoleBlock" }
+    ],
+    hazards: [ { x: 480, y: 195, w: 40, h: 25 } ],
+    update: function(player) {
+      const cb = this.platforms.find(p => p.id === "consoleBlock");
+      if (cb && player.x > 200 && cb.y < 30) {
+        cb.y += 18; // Console window crashes down
+      }
+    }
+  },
+
+  // Level 100: Demon King Core Glitch (Grand Finale Boss Core Encounter)
+  {
+    id: 100,
+    name: "Demon King Core Glitch",
+    spawn: { x: 40, y: 150 },
+    door: { x: 640, y: 160, w: 36, h: 60 },
+    platforms: [
+      { x: 0, y: 220, w: 180, h: 48 },
+      { x: 260, y: 200, w: 100, h: 20, id: "bossCorePlat" },
+      { x: 460, y: 220, w: 260, h: 48 }
+    ],
+    hazards: [
+      { x: 180, y: 260, w: 280, h: 20 },
+      { x: 380, y: 120, w: 40, h: 40, id: "demonCore" }
+    ],
+    bossTick: 0,
+    update: function(player) {
+      this.bossTick = (this.bossTick || 0) + 1;
+      const core = this.hazards.find(h => h.id === "demonCore");
+      const bp = this.platforms.find(p => p.id === "bossCorePlat");
+      // Final Boss Core phase transitions
+      if (core) {
+        core.y = 120 + Math.sin(this.bossTick * 0.15) * 35;
+        core.x = 380 + Math.cos(this.bossTick * 0.15) * 45;
+      }
+      if (bp && player.x > 250 && bp.y < 320) {
+        bp.y += 1.8; // Final platform crumbling test
+      }
+    }
   }
-]; // Array closure complete
+];
+        
+  
