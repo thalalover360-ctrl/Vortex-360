@@ -163,32 +163,40 @@ const levels = [
     }
   },
   
-  // Level 8: Dushman Ya Dost (Cute bug enlarges and crushes screen)
+   // Level 8: Dushman Ya Dost (Cute bug enlarges and crushes screen)
   {
     id: 8,
     name: "Dushman Ya Dost",
     spawn: { x: 40, y: 150 },
     door: { x: 630, y: 160, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 720, h: 48 }
+      { x: 0, y: 220, w: 720, h: 48 },
+      // Safe high leap ledge jo creature ke upar se nikalne ke liye spawn hoti hai
+      { x: 300, y: 120, w: 60, h: 16, id: "escapeStep8", hidden: true }
     ],
     hazards: [
       { x: 420, y: 195, w: 24, h: 25, id: "cuteCreature" }
     ],
     update: function(player) {
       const c = this.hazards.find(h => h.id === "cuteCreature");
-      // Player jaise hi jump karke attack karega, size gigantic ho jayega
-      if (c && player.x > 320) {
-        if (c.w < 180) {
-          c.w += 4;
-          c.h += 4;
-          c.y -= 4;
-          c.x -= 2;
+      const step = this.platforms.find(p => p.id === "escapeStep8");
+
+      // Player aate hi creature bada hoga, par ek max beatable height tak
+      if (c && player.x > 280) {
+        if (c.w < 90) {
+          c.w += 2.5;
+          c.h += 2;
+          c.y -= 2;
         }
+      }
+
+      // Jab player creature ko trigger karke peeche retreat karega, hidden high ledge reveal ho jayegi
+      if (step && player.x > 260) {
+        step.hidden = false;
       }
     }
   },
-
+  
   // Level 9: Falling Ceiling (Ceiling crushes path, retreat to spawn bunker)
   {
     id: 9,
