@@ -163,7 +163,7 @@ const LEVELS = [
     }
   },
 
-  // Level 10: Crumbling Steps Sequence
+   // Level 10: Crumbling Steps Sequence
   {
     id: 10,
     name: "Falling Staircase",
@@ -171,22 +171,22 @@ const LEVELS = [
     door: { x: 620, y: 70, w: 36, h: 60 },
     platforms: [
       { x: 0, y: 220, w: 120, h: 48 },
-      { x: 160, y: 190, w: 70, h: 20, id: "st1" },
-      { x: 280, y: 160, w: 70, h: 20, id: "st2" },
-      { x: 400, y: 130, w: 70, h: 20, id: "st3" },
-      { x: 520, y: 130, w: 200, h: 100 }
+      { x: 150, y: 200, w: 75, h: 20, id: "st1" },
+      { x: 260, y: 175, w: 75, h: 20, id: "st2" },
+      { x: 375, y: 150, w: 75, h: 20, id: "st3" },
+      { x: 480, y: 130, w: 240, h: 100 }
     ],
-    hazards: [{ x: 120, y: 250, w: 400, h: 25 }],
+    hazards: [ { x: 120, y: 250, w: 400, h: 25 } ],
     update: function(player) {
       ['st1', 'st2', 'st3'].forEach((id, idx) => {
         const s = this.platforms.find(p => p.id === id);
         if (s && player.x > s.x - 5 && player.x < s.x + s.w + 5 && player.y <= s.y + 10) {
-          s.y += 6 + idx * 2;
+          s.y += 2.5 + idx * 0.5;
         }
       });
     }
   },
-
+  
   // Level 11: Mid-Air Inversion Gap
   {
     id: 11,
