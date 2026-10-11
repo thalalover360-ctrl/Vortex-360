@@ -30,20 +30,23 @@ const GAME_H = 340;
 canvas.width = GAME_W;
 canvas.height = GAME_H;
 
+// Canvas Scaling Fix (Mobile pe 0px hone se bachata hai)
 function resizeCanvas() {
-  if (!container) return;
-  const availW = container.clientWidth || window.innerWidth;
-  const availH = container.clientHeight || window.innerHeight;
-  const scale = Math.min(availW / GAME_W, availH / GAME_H);
+  const availW = (container && container.clientWidth > 0) ? container.clientWidth : window.innerWidth;
+  const availH = (container && container.clientHeight > 0) ? container.clientHeight : Math.min(window.innerHeight * 0.55, 340);
+  
+  const scale = Math.max(0.3, Math.min(availW / GAME_W, availH / GAME_H));
 
   canvas.style.width = `${Math.floor(GAME_W * scale)}px`;
   canvas.style.height = `${Math.floor(GAME_H * scale)}px`;
+  canvas.style.display = 'block';
+  canvas.style.margin = '0 auto';
 }
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 150));
 resizeCanvas();
 
-// Safe helper to get the levels catalog
+// Safe helper for levels array
 function getLevelsList() {
   if (typeof levels !== 'undefined' && Array.isArray(levels)) return levels;
   if (typeof LEVELS !== 'undefined' && Array.isArray(LEVELS)) return LEVELS;
@@ -60,7 +63,21 @@ let levelDeaths = 0;
 let activeLevel = null;
 let isLevelPaused = true;
 
-const player = new Player();
+// Player fallback instance
+let player = null;
+if (typeof Player !== 'undefined') {
+  player = new Player();
+} else {
+  player = {
+    x: 40, y: 150, w: 20, h: 24, vx: 0, vy: 0,
+    reset: function(x, y) { this.x = x; this.y = y; this.vx = 0; this.vy = 0; },
+    update: function() {},
+    draw: function(c) {
+      c.fillStyle = '#00f0ff';
+      c.fillRect(this.x, this.y, this.w, this.h);
+    }
+  };
+}
 
 const rawInput = { left: false, right: false, jump: false };
 const effectiveInput = { left: false, right: false, jump: false };
@@ -173,7 +190,7 @@ function loadLevel(idx) {
   if (levelTitleEl) {
     levelTitleEl.innerText = `Level ${activeLevel.id}: ${activeLevel.name}`;
   }
-  if (activeLevel.spawn && player.reset) {
+  if (activeLevel.spawn && player && player.reset) {
     player.reset(activeLevel.spawn.x, activeLevel.spawn.y);
   }
 }
@@ -238,13 +255,13 @@ function gameLoop() {
     if (typeof activeLevel.update === 'function') {
       try {
         activeLevel.update(player, effectiveInput);
-      } catch (err) {
-        // Safe catch to prevent loop termination
-      }
+      } catch (err) {}
     }
 
-    if (player.update) {
-      player.update(effectiveInput, activeLevel.platforms);
+    if (player && player.update) {
+      try {
+        player.update(effectiveInput, activeLevel.platforms);
+      } catch (err) {}
     }
 
     if (Array.isArray(activeLevel.hazards)) {
@@ -257,7 +274,7 @@ function gameLoop() {
       }
     }
 
-    if (player.y > canvas.height + 60) {
+    if (player && player.y > canvas.height + 60) {
       handleDeath();
       requestAnimationFrame(gameLoop);
       return;
@@ -316,17 +333,25 @@ function gameLoop() {
       ctx.fillRect(d.x + 4, d.y + 4, d.w - 8, d.h - 8);
     }
 
-    // Player
-    if (player.draw) {
-      player.draw(ctx);
+    // Player (Protected against crashes)
+    try {
+      if (player && typeof player.draw === 'function') {
+        player.draw(ctx);
+      } else {
+        ctx.fillStyle = '#00f0ff';
+        ctx.fillRect(player.x || 40, player.y || 150, 20, 24);
+      }
+    } catch (e) {
+      ctx.fillStyle = '#00f0ff';
+      ctx.fillRect(player.x || 40, player.y || 150, 20, 24);
     }
   }
 
   requestAnimationFrame(gameLoop);
 }
 
-// Initial Level Boot
+// Initial Boot
 loadLevel(0);
 isLevelPaused = true;
 requestAnimationFrame(gameLoop);
-
+    
