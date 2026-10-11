@@ -162,28 +162,29 @@ const LEVELS = [
       if (d2 && player.x > 380) d2.y += 16;
     }
   },
-
-   // Level 10: Crumbling Steps Sequence
+    // Level 10: Moving Bridge
   {
     id: 10,
-    name: "Falling Staircase",
+    name: "Moving Shuttle",
     spawn: { x: 40, y: 150 },
-    door: { x: 620, y: 70, w: 36, h: 60 },
+    door: { x: 620, y: 130, w: 36, h: 60 },
     platforms: [
-      { x: 0, y: 220, w: 120, h: 48 },
-      { x: 150, y: 200, w: 75, h: 20, id: "st1" },
-      { x: 260, y: 175, w: 75, h: 20, id: "st2" },
-      { x: 375, y: 150, w: 75, h: 20, id: "st3" },
-      { x: 480, y: 130, w: 240, h: 100 }
+      { x: 0, y: 220, w: 140, h: 48 },
+      { x: 200, y: 210, w: 90, h: 20, id: "shuttle" },
+      { x: 500, y: 200, w: 220, h: 60 }
     ],
-    hazards: [ { x: 120, y: 250, w: 400, h: 25 } ],
+    hazards: [ { x: 140, y: 260, w: 360, h: 25 } ],
+    direction: 1,
     update: function(player) {
-      ['st1', 'st2', 'st3'].forEach((id, idx) => {
-        const s = this.platforms.find(p => p.id === id);
-        if (s && player.x > s.x - 5 && player.x < s.x + s.w + 5 && player.y <= s.y + 10) {
-          s.y += 2.5 + idx * 0.5;
+      const p = this.platforms.find(item => item.id === "shuttle");
+      if (p) {
+        p.x += (this.direction || 1) * 2;
+        if (p.x > 380) this.direction = -1;
+        if (p.x < 180) this.direction = 1;
+        if (player.x > p.x - 10 && player.x < p.x + p.w + 10 && Math.abs(player.y - (p.y - player.h)) < 5) {
+          player.x += (this.direction || 1) * 2;
         }
-      });
+      }
     }
   },
   
